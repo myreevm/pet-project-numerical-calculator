@@ -1,0 +1,7 @@
+numpy
+matplotlib
+sympy
+io
+fastapi
+uvicorn
+pydantic

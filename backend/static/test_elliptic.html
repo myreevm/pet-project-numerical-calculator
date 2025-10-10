@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест решения эллиптического уравнения</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        .results {
+            margin-top: 20px;
+        }
+        img {
+            display: block;
+            margin: 10px auto;
+            border: 1px solid #ccc;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Решение 1D эллиптического уравнения</h2>
+        <label>L:</label>
+        <input type="number" id="L" value="1.0" step="0.1">
+
+        <label>M (число разбиений):</label>
+        <input type="number" id="M" value="50">
+
+        <label>a:</label>
+        <input type="number" id="a" value="1.0" step="0.1">
+
+        <label>Левое граничное условие u(0):</label>
+        <input type="number" id="left_bc" value="0">
+
+        <label>Правое граничное условие u(L):</label>
+        <input type="number" id="right_bc" value="0">
+
+        <label>Правая часть f(x):</label>
+        <input type="text" id="f_expr" value="np.sin(np.pi * x)">
+
+        <button onclick="solve()">Решить</button>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        async function solve() {
+            const body = {
+                L: parseFloat(document.getElementById("L").value),
+                M: parseInt(document.getElementById("M").value),
+                a: parseFloat(document.getElementById("a").value),
+                left_bc: parseFloat(document.getElementById("left_bc").value),
+                right_bc: parseFloat(document.getElementById("right_bc").value),
+                f_expr: document.getElementById("f_expr").value
+            };
+
+            const resDiv = document.getElementById("results");
+            resDiv.innerHTML = "<p>Вычисление...</p>";
+
+            try {
+                const res = await fetch("http://127.0.0.1:5000/api/elliptic/solve", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                if (!res.ok) throw new Error("Ошибка " + res.status);
+                const data = await res.json();
+
+                resDiv.innerHTML = `
+                    <h3>Результаты:</h3>
+                    <pre>x = ${JSON.stringify(data.x.slice(0,10))} ...</pre>
+                    <pre>u = ${JSON.stringify(data.u.slice(0,10))} ...</pre>
+                    <img src="${data.img_line}" width="500">
+                    <img src="${data.img_heat}" width="500">
+                `;
+            } catch (err) {
+                resDiv.innerHTML = `<p style="color:red">Ошибка: ${err}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
