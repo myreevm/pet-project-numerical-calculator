@@ -189,7 +189,7 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x)"
+                placeholder="sin(pi*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -268,16 +268,7 @@
               />
             </div>
 
-            <div v-if="result.img_heat" :class="[
-              'p-4 rounded-2xl',
-              darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
-            ]">
-              <img
-                  :src="result.img_heat"
-                  alt="Тепловая карта"
-                  class="w-full h-auto rounded-xl"
-              />
-            </div>
+
           </div>
         </div>
       </div>
@@ -305,7 +296,7 @@ const params = ref({
   a: 1.0,
   left_bc: 0.0,
   right_bc: 0.0,
-  f_expr: "np.sin(np.pi * x)",
+  f_expr: "sin(pi*x)",
 });
 
 const result = ref(null);
@@ -338,9 +329,12 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
 }
 
 async function solve() {
