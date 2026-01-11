@@ -22,4 +22,4 @@ def solve_ode_second(L, M, a, left_bc, right_bc, f):
     for i in range(M-1, 0, -1):
         u[i] = xi[i+1]*u[i+1] + eta[i+1]
     
-    return u
+    return x, u

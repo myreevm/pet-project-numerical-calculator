@@ -44,6 +44,65 @@
         darkMode ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm'
       ]">
         <!-- Form -->
+
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
+            Постановка задачи
+          </h2>
+          <p>
+            Рассматривается двумерное параболическое уравнение:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{\partial u}{\partial t} = \frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2} + f(x, y, t), \quad 0 < x < L_1, \quad 0 < y < L_2, \quad 0 < t < T\)
+          </p>
+          <p>
+            с начальным условием:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(x, y, 0) = u_0(x, y), \quad 0 < x < L_1, \quad 0 < y < L_2 \)
+          </p>
+          <p>
+            с граничными условиями:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(0, y, t) = \mu_1(y, t), \quad u(L_1, y, t) = \mu_2(y, t), \quad 0 < y < L_2, \quad 0 < t < T \)
+            \(u(x, 0, t) = \mu_3(x, t), \quad u(x, L_2, t) = \mu_4(x, t), \quad 0 < x < L_1, \quad 0 < t < T \)
+          </p>
+          <p>
+            Здесь \(a > 0\) — коэффициент теплопроводности (или аналогичный параметр в физической постановке),
+            \(f(x)\) — правая часть, задающая распределение источников.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">
+            Метод решения
+          </h2>
+          <p>
+            Для численного решения используется <strong>метод конечных разностей</strong>.
+            Вторая производная аппроксимируется по схеме:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{\partial^2u}{\partial x^2} \approx \frac{u_{i+1} - 2u_i + u_{i-1}}{h^2}\),
+          </p>
+          <p>
+            где \(h = \frac{L}{M}\) — шаг сетки.
+            В результате получаем систему линейных алгебраических уравнений, решаемую методом прогонки.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-purple-600 dark:text-purple-400">
+            Физическая интерпретация
+          </h2>
+          <p>
+            Уравнение теплопроводности описывает установившееся распределение температуры,
+            электрического потенциала или концентрации вещества в однородной среде.
+            Заданные граничные условия определяют значение функции \(u(x)\) на концах области.
+          </p>
+        </div>
+
         <form @submit.prevent="solve" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- L parameter -->
@@ -68,10 +127,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L2)
+                Длина области (Lx)
               </label>
               <input
-                  v-model.number="params.L2"
+                  v-model.number="params.Lx"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -82,10 +141,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L2)
+                Длина области (Ly)
               </label>
               <input
-                  v-model.number="params.L2"
+                  v-model.number="params.Ly"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -114,10 +173,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (N1)
+                Количество разбиений (Nx)
               </label>
               <input
-                  v-model.number="params.N1"
+                  v-model.number="params.Nx"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -129,10 +188,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (N2)
+                Количество разбиений (Ny)
               </label>
               <input
-                  v-model.number="params.N2"
+                  v-model.number="params.Ny"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -164,7 +223,7 @@
                 Начальное условие u(x, y, 0)
               </label>
               <input
-                  v-model.number="params.init_cond"
+                  v-model="params.init_cond"
                   type="text"
                   placeholder="cos(x)"
                   :class="inputClasses"
@@ -180,7 +239,7 @@
                 Левое граничное условие u(0, y, t)
               </label>
               <input
-                  v-model.number="params.left_bc"
+                  v-model="params.left_bc"
                   type="text"
                   placeholder="cos(x)"
                   :class="inputClasses"
@@ -196,7 +255,7 @@
                 Правое граничное условие u(L1, y, t)
               </label>
               <input
-                  v-model.number="params.right_bc"
+                  v-model="params.right_bc"
                   type="text"
                   placeholder="x^2"
                   :class="inputClasses"
@@ -210,7 +269,7 @@
                 Нижнее граничное условие u(x, 0, t)
               </label>
               <input
-                  v-model.number="params.bottom_bc"
+                  v-model="params.bottom_bc"
                   type="text"
                   placeholder="x"
                   :class="inputClasses"
@@ -224,7 +283,7 @@
                 Верхнее граничное условие u(x, L2, t)
               </label>
               <input
-                  v-model.number="params.top_bc"
+                  v-model="params.top_bc"
                   type="text"
                   placeholder="x*2"
                   :class="inputClasses"
@@ -243,9 +302,25 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x)"
+                placeholder="sin(pi*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
+          </div>
+
+          <div class="space-y-2">
+            <label :class="[
+                'block text-sm font-semibold',
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              ]">
+              Метод
+            </label>
+            <select v-model="params.method" :class="inputClasses">
+              <option value="explicit">Явная схема</option>
+              <option value="LODS">Локально одномерная схема</option>
+              <option value="ADI">Метод переменных направлений</option>
+
+            </select>
+
           </div>
 
           <!-- Submit Button -->
@@ -290,41 +365,39 @@
               Результаты решения
             </h2>
 
-            <div :class="[
-              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
-              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
-            ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">x:</strong>
-                {{ formatArray(result.x) }}
-              </p>
-              <p>
-                <strong :class="darkMode ? 'text-purple-400' : 'text-purple-600'">u:</strong>
-                {{ formatArray(result.u) }}
-              </p>
-            </div>
           </div>
 
           <!-- Charts -->
           <div class="space-y-6">
-            <div v-if="result.img_line" :class="[
+            <div v-if="result.img_line1" :class="[
               'p-4 rounded-2xl',
               darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
             ]">
               <img
-                  :src="result.img_line"
+                  :src="result.img_line1"
                   alt="График решения"
                   class="w-full h-auto rounded-xl"
               />
             </div>
 
-            <div v-if="result.img_heat" :class="[
+            <div v-if="result.img_line2" :class="[
               'p-4 rounded-2xl',
               darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
             ]">
               <img
-                  :src="result.img_heat"
-                  alt="Тепловая карта"
+                  :src="result.img_line2"
+                  alt="График решения"
+                  class="w-full h-auto rounded-xl"
+              />
+            </div>
+
+            <div v-if="result.img_line3" :class="[
+              'p-4 rounded-2xl',
+              darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
+            ]">
+              <img
+                  :src="result.img_line3"
+                  alt="График решения"
                   class="w-full h-auto rounded-xl"
               />
             </div>
@@ -344,26 +417,26 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
 
 const darkMode = ref(false);
 
 const params = ref({
   T: 10.0,
-  L1: 1.0,
-  L2: 1.0,
-  M: 50,
-  N1: 100,
-  N2: 100,
+  Lx: 1.0,
+  Ly: 1.0,
+  M: 10,
+  Nx: 20,
+  Ny: 20,
   a: 1.0,
   init_cond: "sin(x)",
   left_bc: 3.0,
   right_bc: 0.0,
   bottom_bc: 3.0,
   top_bc: 0.0,
-  f_expr: "np.sin(np.pi * x)",
-  method: "solve-parabolic-equation",
+  f_expr: "sin(pi*x)",
+  method: "explicit",
 });
 
 const result = ref(null);
@@ -396,9 +469,12 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
 }
 
 async function solve() {
@@ -415,6 +491,15 @@ async function solve() {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
 </script>
 
 <style scoped>

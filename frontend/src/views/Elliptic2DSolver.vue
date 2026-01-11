@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение 1D эллиптического уравнения
+            Решение 2D эллиптического уравнения
           </h1>
         </div>
         <button
@@ -50,16 +50,17 @@
             Постановка задачи
           </h2>
           <p>
-            Рассматривается одномерное стационарное уравнение Пуассона:
+            Рассматривается двумерное стационарное уравнение Пуассона:
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
-            \(-a \frac{\partial^2u}{\partial x^2} = f(x), \quad 0 < x < L\)
+            \(-a(\frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2}) = f(x, y), \quad 0 < x < L_x, \quad 0 < y < L_y\)
           </p>
           <p>
             с граничными условиями Дирихле:
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
-            \(u(0) = u_0, \quad u(L) = u_L\)
+            \(u(0, y) = \mu_1(y), \quad u(L_x, y) = \mu_2(y)\)
+            \(u(x, 0) = \mu_3(x), \quad u(x, L_y) = \mu_4(x)\)
           </p>
           <p>
             Здесь \(a > 0\) — коэффициент теплопроводности (или аналогичный параметр в физической постановке),
@@ -103,10 +104,25 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L)
+                Длина области (Lx)
               </label>
               <input
-                  v-model.number="params.L"
+                  v-model.number="params.Lx"
+                  type="number"
+                  step="1.0"
+                  :class="inputClasses"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label :class="[
+                'block text-sm font-semibold',
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              ]">
+                Длина области (Ly)
+              </label>
+              <input
+                  v-model.number="params.Ly"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -119,10 +135,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (M)
+                Количество разбиений (N)
               </label>
               <input
-                  v-model.number="params.M"
+                  v-model.number="params.N"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -135,10 +151,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (a)
+                Коэффициент (k)
               </label>
               <input
-                  v-model.number="params.a"
+                  v-model.number="params.k"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -151,11 +167,11 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0)
+                Граничное условие u(0, y)
               </label>
               <input
-                  v-model.number="params.left_bc"
-                  type="number"
+                  v-model="params.left_bc"
+                  type="text"
                   step="1.0"
                   :class="inputClasses"
               />
@@ -167,11 +183,41 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L)
+                Граничное условие u(Lx, y)
               </label>
               <input
-                  v-model.number="params.right_bc"
-                  type="number"
+                  v-model="params.right_bc"
+                  type="text"
+                  step="1.0"
+                  :class="inputClasses"
+              />
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+              <label :class="[
+                'block text-sm font-semibold',
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              ]">
+                Граничное условие u(x, 0)
+              </label>
+              <input
+                  v-model="params.bottom_bc"
+                  type="text"
+                  step="1.0"
+                  :class="inputClasses"
+              />
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+              <label :class="[
+                'block text-sm font-semibold',
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              ]">
+                Граничное условие u(x, Ly)
+              </label>
+              <input
+                  v-model="params.top_bc"
+                  type="text"
                   step="1.0"
                   :class="inputClasses"
               />
@@ -184,7 +230,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x)
+              Функция правой части f(x, y)
             </label>
             <input
                 v-model="params.f_expr"
@@ -240,19 +286,6 @@
               Результаты решения
             </h2>
 
-            <div :class="[
-              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
-              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
-            ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">x:</strong>
-                {{ formatArray(result.x) }}
-              </p>
-              <p>
-                <strong :class="darkMode ? 'text-purple-400' : 'text-purple-600'">u:</strong>
-                {{ formatArray(result.u) }}
-              </p>
-            </div>
           </div>
 
           <!-- Charts -->
@@ -261,11 +294,17 @@
               'p-4 rounded-2xl',
               darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
             ]">
-              <img
+              <!--<img
                   :src="result.img_line"
                   alt="График решения"
                   class="w-full h-auto rounded-xl"
+              />-->
+              <img
+                  v-if="result.img_line"
+                  :src="`data:image/png;base64,${result.img_line}`"
               />
+
+
             </div>
 
 
@@ -291,11 +330,14 @@ import axios from "axios";
 const darkMode = ref(false);
 
 const params = ref({
-  L: 1.0,
-  M: 50,
-  a: 1.0,
+  Lx: 1.0,
+  Ly: 1.0,
+  N: 50,
+  k: 1.0,
   left_bc: 0.0,
   right_bc: 0.0,
+  bottom_bc: 0.0,
+  top_bc: 0.0,
   f_expr: "sin(pi*x)",
 });
 
@@ -343,7 +385,7 @@ async function solve() {
   loading.value = true;
 
   try {
-    const res = await axios.post("http://127.0.0.1:5000/api/elliptic/solve", params.value);
+    const res = await axios.post("http://127.0.0.1:5000/api/elliptic2d/solve", params.value);
     result.value = res.data;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;

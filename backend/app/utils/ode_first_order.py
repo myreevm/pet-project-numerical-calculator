@@ -10,7 +10,7 @@ def euler(L, M, a, initial_condition, f):
     
     for i in range(M):
         u[i+1] = u[i] + h * f(x[i]) / a
-    return u
+    return x, u
 
 def symmetric_euler(L, M, a, initial_condition, f):
     h = L/M
@@ -22,3 +22,4 @@ def symmetric_euler(L, M, a, initial_condition, f):
     for i in range(M):
         u[i+1] = u[i] + h * f(x[i])/a
         u[i+1] = u[i] + 0.5 * h * (f(x[i]) + f(x[i+1]))/a
+    return x, u

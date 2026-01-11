@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Вычисление производной
+            {{ $t('derivative.calculatingTheDerivative') }}
           </h1>
         </div>
         <button
@@ -52,7 +52,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Значение (x)
+                {{ $t('derivative.value') }}
               </label>
               <input
                   v-model.number="params.x"
@@ -68,7 +68,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Шаг (h)
+                {{ $t('derivative.step') }}
               </label>
               <input
                   v-model.number="params.h"
@@ -85,7 +85,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Метод
+                {{ $t('derivative.method') }}
               </label>
               <select v-model="params.method" :class="inputClasses">
                 <option value="left-derivative">Левая производная</option>
@@ -102,12 +102,12 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция f(x)
+              {{ $t('derivative.function') }}
             </label>
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x * x)"
+                placeholder="sin(pi * x * x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -130,7 +130,7 @@
               </svg>
               Вычисление...
             </span>
-            <span v-else>Вычислить производную</span>
+            <span v-else>{{ $t('derivative.calculateTheDerivative') }}</span>
           </button>
         </form>
 
@@ -158,9 +158,9 @@
               'text-sm p-4 rounded-xl overflow-x-auto font-mono',
               darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
             ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">Результат:</strong>
-                {{ result }}
+              <p class="mb-2 text-xl">
+                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'"></strong>
+                \(\frac{df({{x}})}{dx} = {{ result }}\)
               </p>
             </div>
           </div>
@@ -179,21 +179,29 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated, nextTick, watch, provide} from "vue";
+import { useI18n } from 'vue-i18n'
 import axios from "axios";
 
+const { locale } = useI18n()
+const language = ref(locale.value)
 const darkMode = ref(false);
-
+const x = ref(1.0);
 const params = ref({
   x: 1.0,
   h: 0.01,
   method: "left-derivative",
-  f_expr: "np.sin(np.pi * x)",
+  f_expr: "sin(pi*x*x)",
 });
 
 const result = ref(null);
 const error = ref("");
 const loading = ref(false);
+
+watch(language, (lang) => {
+  locale.value = lang
+  localStorage.setItem('lang', lang)
+})
 
 // Load theme from localStorage on mount
 onMounted(() => {
@@ -233,13 +241,22 @@ async function solve() {
 
   try {
     const res = await axios.post("http://127.0.0.1:5000/api/derivative/solve", params.value);
-    result.value = res.data;  // res.data = { result: число }
+    result.value = res.data.result;  // res.data = { result: число }
+    x.value = params.value.x;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;
   } finally {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
 
 </script>
 

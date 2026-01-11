@@ -57,7 +57,8 @@
               <input
                   v-model.number="params.eps"
                   type="number"
-                  step="0.01"
+                  step="any"
+                  min="0"
                   :class="inputClasses"
               />
             </div>
@@ -71,7 +72,7 @@
                 Начальное приближение (x0)
               </label>
               <input
-                  v-model.number="params.x0"
+                  v-model.number="params.init_cond"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -89,7 +90,7 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x)"
+                placeholder="sin(pi*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -186,15 +187,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
 
 const darkMode = ref(false);
 
 const params = ref({
-  eps: 0.001,
-  x0: 1,
-  f_expr: "np.sin(np.pi * x)",
+  eps: 0.01,
+  init_cond: 1,
+  f_expr: "sin(pi*x)",
 });
 
 const result = ref(null);
@@ -227,9 +228,12 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
 }
 
 async function solve() {
@@ -246,6 +250,15 @@ async function solve() {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
 </script>
 
 <style scoped>

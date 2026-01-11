@@ -66,7 +66,7 @@ def simple_iter_method(L, M, a, delta, left_bc, right_bc, f_func, max_iter):
     #plt.grid()
     #plt.show()
 
-def tikhonov_method(L, M, alpha, left_bc, right_bc, f_func):
+def tikhonov_method(L, M, a, alpha, left_bc, right_bc, f_func):
     x = np.linspace(0, L, M+1)
     h = L/M
 
@@ -79,7 +79,7 @@ def tikhonov_method(L, M, alpha, left_bc, right_bc, f_func):
     D[0,1] = -1
     D[-1,-2] = -1
     D[-1,-1] = 2
-    D /= h**2
+    D /= h**2*a
 
     u = np.zeros_like(x)
     u0 = left_bc
@@ -118,10 +118,11 @@ def tikhonov_method(L, M, alpha, left_bc, right_bc, f_func):
         f_alpha=np.dot(np.dot(D, u_delta), np.linalg.inv(E + a*np.dot(np.transpose(D), D)))
         plt.plot(f_alpha, label='alpha = '+str(a))
 
-    print("Правая часть (восстановленная):")
-    print(f_alpha)
+    #print("Правая часть (восстановленная):")
+    #print(f_alpha)
 
-    plt.plot(f)
-    plt.legend()
-    plt.grid()
-    plt.show()
+    #plt.plot(f)
+    #plt.legend()
+    #plt.grid()
+    #plt.show()
+    return f_alpha, f

@@ -129,7 +129,7 @@ def solve_inverse_parabolic(T, L, N, M, a, delta, init_cond, left_bc, right_bc, 
         for i in range(M+1):
             f_exact[j, i] = f(x[i], t[j])
 
-    return f_k, f_exact
+    return x, f_k, f_exact
     # Сравнение при t = 0.5
     #plt.plot(x, f_k[N//2], label='Восстановленный f')
     #plt.plot(x, f_exact[N//2], label='Точный f')

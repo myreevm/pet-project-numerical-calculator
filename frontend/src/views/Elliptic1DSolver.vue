@@ -240,19 +240,6 @@
               Результаты решения
             </h2>
 
-            <div :class="[
-              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
-              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
-            ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">x:</strong>
-                {{ formatArray(result.x) }}
-              </p>
-              <p>
-                <strong :class="darkMode ? 'text-purple-400' : 'text-purple-600'">u:</strong>
-                {{ formatArray(result.u) }}
-              </p>
-            </div>
           </div>
 
           <!-- Charts -->
@@ -343,7 +330,7 @@ async function solve() {
   loading.value = true;
 
   try {
-    const res = await axios.post("http://127.0.0.1:5000/api/elliptic/solve", params.value);
+    const res = await axios.post("http://127.0.0.1:5000/api/elliptic1d/solve", params.value);
     result.value = res.data;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;

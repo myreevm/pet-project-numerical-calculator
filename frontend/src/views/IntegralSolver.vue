@@ -107,7 +107,7 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x * x)"
+                placeholder="sin(pi*x*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -176,9 +176,9 @@
               'text-sm p-4 rounded-xl overflow-x-auto font-mono',
               darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
             ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">Результат:</strong>
-                {{ result }}
+              <p class="mb-2 text-xl">
+                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'"></strong>
+                \( \int_{ {{a}} }^{ {{b}} } f(x) \, dx = {{ result }}\)
               </p>
             </div>
           </div>
@@ -197,17 +197,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
 
 const darkMode = ref(false);
 
+const a = ref(1.0);
+const b = ref(5.0);
 const params = ref({
   a: 1.0,
   b: 5.0,
   n: 100,
   method: "left-rectangle-method",
-  f_expr: "np.sin(np.pi * x)",
+  f_expr: "sin(pi*x*x)",
 });
 
 const result = ref(null);
@@ -252,13 +254,23 @@ async function solve() {
 
   try {
     const res = await axios.post("http://127.0.0.1:5000/api/integral/solve", params.value);
-    result.value = res.data;
+    result.value = res.data.result;
+    a.value = params.value.a;
+    b.value = params.value.b;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;
   } finally {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
 
 </script>
 

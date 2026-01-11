@@ -1,6 +1,6 @@
 import numpy as np
 
-def solve_parabolic_equation_2d(T, L1, L2, N, M1, M2, init_cond, left_bc, right_bc, bottom_bc, top_bc, f):
+def solve_parabolic_equation_2d(T, L1, L2, N, M1, M2, a, init_cond, left_bc, right_bc, bottom_bc, top_bc, f):
     tau = T/N
     h1 = L1/M1
     h2 = L2/M2
@@ -24,9 +24,9 @@ def solve_parabolic_equation_2d(T, L1, L2, N, M1, M2, init_cond, left_bc, right_
     
     for k in range(N):
         for j in range(M2+1):
-            alpha = 1 / (h1 * h1)
-            gamma = (2 / (h1 * h1) + 1 / tau)
-            beta = 1 / (h1 * h1)
+            alpha = 1 / (h1 * h1)*a
+            gamma = (2 / (h1 * h1) + 1 / tau)*a
+            beta = 1 / (h1 * h1)*a
             
             xi = np.zeros((M1+1))
             eta = np.zeros((M1+1))
@@ -43,9 +43,9 @@ def solve_parabolic_equation_2d(T, L1, L2, N, M1, M2, init_cond, left_bc, right_
                 u[k+1, i, j] = xi[i + 1] * u[k, i+1, j] + eta[i+1]
             
         for i in range(M1+1):
-            alpha = 1 / (h2 * h2)
-            gamma = (2 / (h2 * h2) + 1 / tau)
-            beta = 1 / (h2 * h2)
+            alpha = 1 / (h2 * h2)*a
+            gamma = (2 / (h2 * h2) + 1 / tau)*a
+            beta = 1 / (h2 * h2)*a
             xi = np.zeros((M1+1))
             eta = np.zeros((M1+1))
             xi[1] = 0

@@ -5,19 +5,23 @@ from typing import Optional
 import numpy as np
 import base64
 from io import BytesIO
+from enum import Enum
 import matplotlib.pyplot as plt
 
-from ..utils import solve_elliptic_equation
+from ..utils import euler, symmetric_euler
 
-router = APIRouter(prefix="/api/elliptic", tags=["elliptic"])
+router = APIRouter(prefix="/api/ode1", tags=["ode1"])
 
-# модель запроса
+class MethodType(str, Enum):
+    euler = 'euler_method'
+    symmetric_euler = 'symmetric_euler_method'
+
 class SolveRequest(BaseModel):
     L: float
     M: int
     a: float
-    left_bc: float
-    right_bc: float
+    init_cond: float
+    method: MethodType
     # f можно передать как строку-выражение от x (например "np.sin(x) + x**2"),
     # либо как список чисел (len = M+1)
     f_expr: Optional[str] = None
@@ -36,7 +40,7 @@ def _parse_f(L, M, f_expr=None, f_values=None):
             "np": np,
             "sin": np.sin, "cos": np.cos, "tan": np.tan,
             "exp": np.exp, "sqrt": np.sqrt, "log": np.log,
-            "pi": np.pi
+            "pi": np.pi, "e": np.e
         }
 
         def f_callable(xarr):
@@ -47,7 +51,8 @@ def _parse_f(L, M, f_expr=None, f_values=None):
                     val = np.full_like(xarr, float(val))
                 return val
             except Exception as e:
-                raise ValueError(f"Ошибка при вычислении f_expr: {e}")
+                #raise ValueError(f"Нет переменной x в функции правой части")
+                raise ValueError(f"Неизвестная переменная")
         return f_callable
 
     raise ValueError("Нужно передать либо f_expr, либо f_values")
@@ -68,33 +73,26 @@ def solve(req: SolveRequest):
         f_callable = _parse_f(req.L, req.M, req.f_expr, req.f_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
+    print("solving")
     try:
-        x, u = solve_elliptic_equation(req.L, req.M, req.a, req.left_bc, req.right_bc, f_callable)
+        if (req.method == MethodType.euler):
+            x, u = euler(req.L, req.M, req.a, req.init_cond, f_callable)
+        else:
+            x, u = symmetric_euler(req.L, req.M, req.a, req.init_cond, f_callable)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка решения: {e}")
+        raise HTTPException(status_code=500, detail=f"{e}")
 
     # --- 1D plot ---
     fig1 = plt.figure(figsize=(6,4))
     plt.plot(x, u, marker='o')
     plt.xlabel('x')
     plt.ylabel('u(x)')
+    plt.grid()
     plt.title('Решение u(x)')
     img_line = _plot_to_base64(fig1)
-
-    # --- "image" plot: показываем решение как 2D-heatmap (просто для картинки) ---
-    fig2 = plt.figure(figsize=(6,2))
-    # преобразуем к 2D для imshow: одну строку, много столбцов
-    arr = u.reshape(1, -1)
-    plt.imshow(arr, aspect='auto', interpolation='nearest')
-    plt.yticks([])  # убираем y-ось
-    plt.xlabel('узлы')
-    plt.title('Изображение решения (heatmap)')
-    img_heat = _plot_to_base64(fig2)
 
     return {
         "x": x.tolist(),
         "u": u.tolist(),
         "img_line": img_line,
-        "img_heat": img_heat
     }

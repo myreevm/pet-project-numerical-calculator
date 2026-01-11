@@ -43,7 +43,57 @@
         'rounded-3xl shadow-2xl p-6 md:p-8 transition-colors duration-300',
         darkMode ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm'
       ]">
-        <!-- Form -->
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
+            Постановка задачи
+          </h2>
+          <p>
+            Рассматривается обыкновенное дифференциальное уравнение 2-го порядка:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{d^2u}{dx^2} = f(x), \quad 0 < x < L \)
+          </p>
+          <p>
+            с начальным условием:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(0) = u_0, \quad u(L) = u_L \)
+          </p>
+          <p>
+            Здесь \(a > 0\) — коэффициент теплопроводности (или аналогичный параметр в физической постановке),
+            \(f(x)\) — правая часть, задающая распределение источников.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">
+            Метод решения
+          </h2>
+          <p>
+            Для численного решения используется <strong>метод конечных разностей</strong>.
+            Первая производная аппроксимируется по схеме:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{du}{dx} \approx \frac{u_{i+1} - u_i}{h}\),
+          </p>
+          <p>
+            где \(h = \frac{L}{M}\) — шаг сетки.
+            В результате получаем систему линейных алгебраических уравнений, решаемую методом прогонки.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-purple-600 dark:text-purple-400">
+            Физическая интерпретация
+          </h2>
+          <p>
+            Уравнение теплопроводности описывает установившееся распределение температуры,
+            электрического потенциала или концентрации вещества в однородной среде.
+            Заданные граничные условия определяют значение функции \(u(x)\) на концах области.
+          </p>
+        </div>
+
         <form @submit.prevent="solve" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- L parameter -->
@@ -138,7 +188,7 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x)"
+                placeholder="sin(pi*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -185,19 +235,6 @@
               Результаты решения
             </h2>
 
-            <div :class="[
-              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
-              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
-            ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">x:</strong>
-                {{ formatArray(result.x) }}
-              </p>
-              <p>
-                <strong :class="darkMode ? 'text-purple-400' : 'text-purple-600'">u:</strong>
-                {{ formatArray(result.u) }}
-              </p>
-            </div>
           </div>
 
           <!-- Charts -->
@@ -213,16 +250,7 @@
               />
             </div>
 
-            <div v-if="result.img_heat" :class="[
-              'p-4 rounded-2xl',
-              darkMode ? 'bg-gray-700/30' : 'bg-white shadow-md'
-            ]">
-              <img
-                  :src="result.img_heat"
-                  alt="Тепловая карта"
-                  class="w-full h-auto rounded-xl"
-              />
-            </div>
+
           </div>
         </div>
       </div>
@@ -239,7 +267,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
 
 const darkMode = ref(false);
@@ -250,7 +278,7 @@ const params = ref({
   a: 1.0,
   left_bc: 0.0,
   right_bc: 0.0,
-  f_expr: "np.sin(np.pi * x)",
+  f_expr: "sin(pi*x)",
 });
 
 const result = ref(null);
@@ -283,9 +311,12 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
 }
 
 async function solve() {
@@ -294,7 +325,7 @@ async function solve() {
   loading.value = true;
 
   try {
-    const res = await axios.post("http://127.0.0.1:5000/api/odesecondorder/solve", params.value);
+    const res = await axios.post("http://127.0.0.1:5000/api/ode2/solve", params.value);
     result.value = res.data;
   } catch (err) {
     error.value = err.response?.data?.detail || err.message;
@@ -302,6 +333,15 @@ async function solve() {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
 </script>
 
 <style scoped>

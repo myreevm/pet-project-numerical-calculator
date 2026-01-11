@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение 1D параболического уравнения
+            Численное моделирование роста солидной опухоли
           </h1>
         </div>
         <button
@@ -52,13 +52,33 @@
           <p>
             Рассматривается система дифференциальных уравнений:
           </p>
-          <p
-              class="text-center my-4 font-mono text-lg italic"
-              v-html="latexFormula"
-          ></p>
+
+          <p class="text-center my-4 font-mono text-lg italic" v-if="params.method === 'withdiffusion'">
+            \(
+            \begin{cases}
+            \dfrac{\partial u_1}{\partial t} = D_1 \dfrac{\partial^2 u_1}{\partial x^2} + \mu_1 u_1 - \mu_1 u_1 u_3 - \gamma1 u_1 u_3, \\[6pt]
+            \dfrac{\partial u_2}{\partial t} = D_2 \dfrac{\partial^2 u_2}{\partial x^2} + \mu_2 u_2 (1 - u_2) - \mu_2 u_2 u_3 - \gamma_2 u_1 u_2 - \gamma_3 u_2 u_3, \\[6pt]
+            \dfrac{\partial u_3}{\partial t} = (\gamma2 u_1 u_2 + \gamma1 u_1 u_3 + \gamma3 u_2 u_3)(1 - u_3). \\[6pt]
+            \end{cases}
+            \)
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic" v-else-if="params.method === 'withoutdiffusion'">
+            \(
+            \begin{cases}
+            \dfrac{\partial u_1}{\partial t} = \mu_1 u_1 - \mu_1 u_1 u_3 - \gamma1 u_1 u_3, \\[6pt]
+            \dfrac{\partial u_2}{\partial t} = \mu_2 u_2 (1 - u_2) - \mu_2 u_2 u_3 - \gamma_2 u_1 u_2 - \gamma_3 u_2 u_3, \\[6pt]
+            \dfrac{\partial u_3}{\partial t} = (\gamma2 u_1 u_2 + \gamma1 u_1 u_3 + \gamma3 u_2 u_3)(1 - u_3). \\[6pt]
+            \end{cases}
+            \)
+          </p>
 
           <p>
             Здесь \(t > 0\) — время, сут.
+          </p>
+          <p>
+            \(u_1\) - линейная плотность делящихся клеток
+            \(u_2\) - нормальных
+            \(u_3\) - погибших
           </p>
         </div>
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
@@ -88,9 +108,8 @@
                 Модель
               </label>
               <select v-model="params.method" :class="inputClasses">
-                <option value="mono">Классическая модель Моно</option>
-                <option value="herbert">Модель Герберта</option>
-                <option value="haldane">Модель Халдейна</option>
+                <option value="withdiffusion">с диффузией</option>
+                <option value="withoutdiffusion">без диффузии</option>
 
               </select>
 
@@ -101,10 +120,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина времени (T)
+                Начальная плотность опухоли
               </label>
               <input
-                  v-model.number="params.T"
+                  v-model.number="params.u10"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -116,10 +135,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений по времени (N)
+                Начальная плотность здоровых клеток
               </label>
               <input
-                  v-model.number="params.N"
+                  v-model.number="params.u20"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -132,10 +151,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Скорость роста
+                Начальная доля мёртвых клеток
               </label>
               <input
-                  v-model.number="params.mu_m"
+                  v-model.number="params.u30"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -148,10 +167,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Насыщения
+                Начальный момент времени
               </label>
               <input
-                  v-model.number="params.K_L"
+                  v-model.number="params.t0"
                   type="number"
                   step="1.0"
                   :class="inputClasses"
@@ -164,10 +183,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент выхода
+                Конечный момент времени
               </label>
               <input
-                  v-model.number="params.Y"
+                  v-model.number="params.t_end"
                   type="number"
                   step="0.1"
                   :class="inputClasses"
@@ -180,10 +199,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальная концентрация микроорганизмов (мг/л)
+                Шаг по времени
               </label>
               <input
-                  v-model.number="params.X0"
+                  v-model.number="params.h"
                   type="number"
                   step="0.1"
                   :class="inputClasses"
@@ -191,16 +210,75 @@
             </div>
           </div>
 
-          <!-- f_expr -->
           <div class="space-y-2">
             <label :class="[
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Начальная концентрация субстрата (мг/л)
+              Скорость размножения опухолевых клеток
             </label>
             <input
-                v-model.number="params.L0"
+                v-model.number="params.mu1"
+                type="number"
+                step="0.1"
+                :class="[inputClasses, 'font-mono text-sm']"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label :class="[
+              'block text-sm font-semibold',
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            ]">
+              Скорость восстановления / роста здоровых клеток
+            </label>
+            <input
+                v-model.number="params.mu2"
+                type="number"
+                step="0.1"
+                :class="[inputClasses, 'font-mono text-sm']"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label :class="[
+              'block text-sm font-semibold',
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            ]">
+              Интенсивность гибели опухолевых клеток из-за мёртвой ткани
+            </label>
+            <input
+                v-model.number="params.gamma1"
+                type="number"
+                step="0.1"
+                :class="[inputClasses, 'font-mono text-sm']"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label :class="[
+              'block text-sm font-semibold',
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            ]">
+              Гибель здоровых клеток из-за опухолевых
+            </label>
+            <input
+                v-model.number="params.gamma2"
+                type="number"
+                step="0.1"
+                :class="[inputClasses, 'font-mono text-sm']"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label :class="[
+              'block text-sm font-semibold',
+              darkMode ? 'text-gray-300' : 'text-gray-700'
+            ]">
+              Гибель здоровых клеток из-за некроза
+            </label>
+            <input
+                v-model.number="params.gamma3"
                 type="number"
                 step="0.1"
                 :class="[inputClasses, 'font-mono text-sm']"
@@ -284,7 +362,7 @@
         'text-center mt-8 text-sm',
         darkMode ? 'text-gray-400' : 'text-gray-600'
       ]">
-        <p>Численное решение параболического уравнения методом конечных разностей</p>
+        <p>Численное моделирование роста солидной опухоли</p>
       </div>
     </div>
   </div>
@@ -297,14 +375,18 @@ import axios from "axios";
 const darkMode = ref(false);
 
 const params = ref({
-  T: 1.0,
-  N: 100,
-  mu_m: 5.0,
-  K_L: 10.0,
-  Y: 0.5,
-  X0: 0.0,
-  L0: 1.5,
-  method: "mono",
+  u10: 1.0,
+  u20: 1.0,
+  u30: 1.0,
+  t0: 0.0,
+  t_end: 10.0,
+  h: 0.1,
+  mu1: 1.5,
+  mu2: 1.5,
+  gamma1: 1.5,
+  gamma2: 1.5,
+  gamma3: 1.5,
+  method: "withdiffusion",
 });
 
 const result = ref(null);
@@ -368,58 +450,6 @@ onMounted(() => {
 onUpdated(() => {
   if (window.MathJax) window.MathJax.typesetPromise()
 })
-
-
-const latexFormula = computed(() => {
-  switch (params.value.method) {
-    case 'mono':
-      return `
-      \\(
-      \\begin{cases}
-      \\dfrac{dX}{dt} = \\dfrac{\\mu_m L}{K_L + L} \\\\
-      \\dfrac{dL}{dt} = -\\dfrac{1}{Y} \\dfrac{\\mu_m L}{K_L + L} \\\\
-      X(0) = X^0,\\; L(0) = L^0
-      \\end{cases}
-      \\)
-      `
-    case 'herbert':
-      return `
-      \\(
-      \\begin{cases}
-      \\dfrac{dX}{dt} = \\dfrac{\\mu_m L}{K_L + L} - bX \\\\
-      \\dfrac{dL}{dt} = -\\dfrac{1}{Y} \\dfrac{\\mu_m L}{K_L + L} \\\\
-      X(0) = X^0,\\; L(0) = L^0
-      \\end{cases}
-      \\)
-      `
-    case 'haldane':
-      return `
-      \\(
-      \\begin{cases}
-      \\dfrac{dX}{dt} =
-      \\dfrac{\\mu_m L}{K_L + L + \\frac{L^2}{K_i}} \\\\
-      \\dfrac{dL}{dt} =
-      -\\dfrac{1}{Y}
-      \\dfrac{\\mu_m L}{K_L + L + \\frac{L^2}{K_i}} \\\\
-      X(0) = X^0,\\; L(0) = L^0
-      \\end{cases}
-      \\)
-      `
-    default:
-      return ''
-  }
-})
-
-watch(
-    () => params.value.method,
-    async () => {
-      await nextTick()
-      if (window.MathJax) {
-        window.MathJax.typeset()
-      }
-    },
-    { immediate: true }
-)
 
 </script>
 

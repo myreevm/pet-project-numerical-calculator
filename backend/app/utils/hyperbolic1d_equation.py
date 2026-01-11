@@ -1,6 +1,6 @@
 import numpy as np
 
-def solve_hyperbolic_equation(T, L, N, M, a, init_cond, initial_velocity, left_bc, right_bc):
+def solve_hyperbolic_equation(T, L, N, M, a, init_cond, initial_velocity, left_bc, right_bc, f):
     tau = T/N
     h = L/M
     t = np.linspace(0, T, N+1)
@@ -22,6 +22,6 @@ def solve_hyperbolic_equation(T, L, N, M, a, init_cond, initial_velocity, left_b
     for i in range(1, N):
         for j in range(1, M):
             #u[i+1, j] = u[i, j] + a * tau / h**2 * (u[i, j+1] - 2*u[i, j] + u[i, j-1])
-            u[i+1, j] = 2 * u[i, j] - u[i-1, j] + (a * tau / h) ** 2 * (u[i, j+1] - 2*u[i, j] + u[i, j-1])
+            u[i+1, j] = 2 * u[i, j] - u[i-1, j] + (a * tau / h) ** 2 * (u[i, j+1] - 2*u[i, j] + u[i, j-1]) + tau*f(x[j], t[i])
 
     return x, u

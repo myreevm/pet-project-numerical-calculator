@@ -19,6 +19,7 @@
             Решение 1D гиперболического уравнения
           </h1>
         </div>
+
         <button
             @click="toggleTheme"
             :class="[
@@ -43,7 +44,63 @@
         'rounded-3xl shadow-2xl p-6 md:p-8 transition-colors duration-300',
         darkMode ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/80 backdrop-blur-sm'
       ]">
-        <!-- Form -->
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
+            Постановка задачи
+          </h2>
+          <p>
+            Рассматривается одномерное гиперболическое уравнение:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{\partial^2 u}{\partial t^2} = a \frac{\partial^2u}{\partial x^2} + f(x), \quad 0 < x < L, \quad 0 < t < T \)
+          </p>
+          <p>
+            с начальными условиями:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(x, 0) = u_0(x), \quad 0 < x < L \)
+            \(\frac{\partial u(x, 0)}{\partial t} = u_1(x), \quad 0 < x < L \)
+          </p>
+          <p>
+            с граничными условиями:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(0, t) = \mu_1(t), \quad u(L, t) = \mu_2(t), \quad 0 < t < T \)
+          </p>
+          <p>
+            Здесь \(a > 0\) — коэффициент теплопроводности (или аналогичный параметр в физической постановке),
+            \(f(x)\) — правая часть, задающая распределение источников.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">
+            Метод решения
+          </h2>
+          <p>
+            Для численного решения используется <strong>метод конечных разностей</strong>.
+            Вторая производная аппроксимируется по схеме:
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(\frac{\partial^2u}{\partial x^2} \approx \frac{u_{i+1} - 2u_i + u_{i-1}}{h^2}\),
+          </p>
+          <p>
+            где \(h = \frac{L}{M}\) — шаг сетки.
+            В результате получаем систему линейных алгебраических уравнений, решаемую методом прогонки.
+          </p>
+        </div>
+        <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
+             :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
+          <h2 class="text-xl font-semibold mb-3 text-purple-600 dark:text-purple-400">
+            Физическая интерпретация
+          </h2>
+          <p>
+            Уравнение теплопроводности описывает установившееся распределение температуры,
+            электрического потенциала или концентрации вещества в однородной среде.
+            Заданные граничные условия определяют значение функции \(u(x)\) на концах области.
+          </p>
+        </div>
         <form @submit.prevent="solve" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- L parameter -->
@@ -127,13 +184,13 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальное условие u(0)
+                Начальное условие u(x, 0)
               </label>
               <input
-                  v-model.number="params.init_cond"
-                  type="number"
-                  step="1.0"
-                  :class="inputClasses"
+                  v-model="params.init_cond"
+                  type="text"
+                  placeholder="x+1"
+                  :class="[inputClasses, 'font-mono text-sm']"
               />
             </div>
 
@@ -142,13 +199,13 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальная скорость u'(0)
+                Начальная скорость u'(x, 0)
               </label>
               <input
-                  v-model.number="params.init_velocity"
-                  type="number"
-                  step="1.0"
-                  :class="inputClasses"
+                  v-model="params.init_velocity"
+                  type="text"
+                  placeholder="x**2"
+                  :class="[inputClasses, 'font-mono text-sm']"
               />
             </div>
 
@@ -157,13 +214,13 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0)
+                Граничное условие u(0, t)
               </label>
               <input
-                  v-model.number="params.left_bc"
-                  type="number"
-                  step="1.0"
-                  :class="inputClasses"
+                  v-model="params.left_bc"
+                  type="text"
+                  placeholder="t"
+                  :class="[inputClasses, 'font-mono text-sm']"
               />
             </div>
 
@@ -173,13 +230,13 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L)
+                Граничное условие u(L, t)
               </label>
               <input
-                  v-model.number="params.right_bc"
-                  type="number"
-                  step="1.0"
-                  :class="inputClasses"
+                  v-model="params.right_bc"
+                  type="text"
+                  placeholder="cos(pi*t)"
+                  :class="[inputClasses, 'font-mono text-sm']"
               />
             </div>
           </div>
@@ -195,7 +252,7 @@
             <input
                 v-model="params.f_expr"
                 type="text"
-                placeholder="np.sin(np.pi * x)"
+                placeholder="sin(pi*x)"
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
@@ -242,19 +299,6 @@
               Результаты решения
             </h2>
 
-            <div :class="[
-              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
-              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
-            ]">
-              <p class="mb-2">
-                <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'">x:</strong>
-                {{ formatArray(result.x) }}
-              </p>
-              <p>
-                <strong :class="darkMode ? 'text-purple-400' : 'text-purple-600'">u:</strong>
-                {{ formatArray(result.u) }}
-              </p>
-            </div>
           </div>
 
           <!-- Charts -->
@@ -296,7 +340,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
 
 const darkMode = ref(false);
@@ -307,11 +351,11 @@ const params = ref({
   N: 100,
   M: 50,
   a: 1.0,
-  init_cond: 1.0,
-  init_velocity: 1.0,
-  left_bc: 0.0,
-  right_bc: 0.0,
-  f_expr: "np.sin(np.pi * x)",
+  init_cond: "x+1",
+  init_velocity: "x**2",
+  left_bc: "t",
+  right_bc: "cos(pi*t)",
+  f_expr: "sin(pi*x)",
 });
 
 const result = ref(null);
@@ -344,9 +388,12 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
 }
 
 async function solve() {
@@ -363,6 +410,15 @@ async function solve() {
     loading.value = false;
   }
 }
+
+onMounted(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
+onUpdated(() => {
+  if (window.MathJax) window.MathJax.typesetPromise()
+})
+
 </script>
 
 <style scoped>

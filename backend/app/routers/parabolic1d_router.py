@@ -35,45 +35,102 @@ class SolveRequest(BaseModel):
     f_expr: Optional[Union[str, float]] = None
     f_values: Optional[List[float]] = None
 
-def _parse_function(var_name: str, var_end: float, N: int, expr=None, values=None):
-    """
-    Универсальный парсер для функций от одной переменной (x или t).
-    Поддерживает:
-      - expr: число, строку (например "sin(x) + x**2")
-      - values: список чисел длиной N+1
-    """
-    var = np.linspace(0, var_end, N + 1)
+def _parse_f(T, N, L, M, f_expr=None, f_values=None):
+    t = np.linspace(0, T, N+1)
+    x = np.linspace(0, L, M+1)
+    if f_values is not None:
+        arr = np.asarray(f_values, dtype=float)
+        if arr.shape != (M+1, N+1):
+            raise ValueError("f_values должен иметь форму (M+1, N+1)")
+        return lambda xx, tt: arr  # игнорируем вход, возвращаем массив
 
-    # --- табличные значения ---
-    if values is not None:
-        arr = np.asarray(values, dtype=float)
-        if arr.shape[0] != var.shape[0]:
-            raise ValueError(f"{var_name}_values должен иметь длину {N+1}")
-        return lambda _: arr.copy()
+    if f_expr is not None:
+        if isinstance(f_expr, (int, float)):
+            return lambda xarr, tarr: np.full_like(xarr, float(f_expr))
+        allowed = {
+            "np": np,
+            "sin": np.sin, "cos": np.cos, "tan": np.tan,
+            "exp": np.exp, "sqrt": np.sqrt, "log": np.log,
+            "pi": np.pi, "e": np.e
+        }
 
-    # --- константа ---
-    if isinstance(expr, (int, float)):
-        return lambda _: np.full_like(var, float(expr))
-
-    # --- аналитическое выражение ---
-    if isinstance(expr, str):
-        def func(v):
+        def f_callable(xarr, tarr):
             try:
-                val = ne.evaluate(expr, local_dict={var_name: v, "np": np})
-                val = np.asarray(val, dtype=float)
-                if val.ndim == 0:  # если скаляр
-                    val = np.full_like(v, float(val))
+                val = eval(f_expr, {"__builtins__": {}}, {**allowed, "x": xarr, "t": tarr})
+                # если результат — число, преобразуем в массив той же формы
+                if np.isscalar(val):
+                    val = np.full_like(xarr, float(val))
                 return val
             except Exception as e:
-                raise ValueError(f"Ошибка при вычислении {var_name}-выражения: {e}")
-        return func
+                raise ValueError("Неизвестная переменная для функции правой части"+str(e))
+        return f_callable
 
-    raise ValueError(f"Нужно передать либо {var_name}_expr, либо {var_name}_values")
+    raise ValueError("Нужно передать либо f_expr, либо f_values")
 
+def _parse_init(L, M, f_expr=None, f_values=None):
+    x = np.linspace(0, L, M+1)
+    if f_values is not None:
+        arr = np.asarray(f_values, dtype=float)
+        if arr.shape[0] != x.shape[0]:
+            raise ValueError("f_values должен иметь длину M+1")
+        return lambda xx: arr  # возвращаем массив (игнорируем xx)
 
+    if f_expr is not None:
+        if isinstance(f_expr, (int, float)):
+            return lambda yarr: np.full_like(yarr, float(f_expr))
+        allowed = {
+            "np": np,
+            "sin": np.sin, "cos": np.cos, "tan": np.tan,
+            "exp": np.exp, "sqrt": np.sqrt, "log": np.log,
+            "pi": np.pi, "e": np.e
+        }
 
+        def init_callable(xarr):
+            try:
+                val = eval(f_expr, {"__builtins__": {}}, {**allowed, "x": xarr})
+                # если результат — число, преобразуем в массив той же длины, что xarr
+                if np.isscalar(val):
+                    val = np.full_like(xarr, float(val))
+                return val
+            except Exception as e:
+                #raise ValueError(f"Нет переменной x в функции правой части")
+                raise ValueError(f"Неизвестная переменная для начального условия"+str(e))
+        return init_callable
 
+    raise ValueError("Нужно передать либо f_expr, либо f_values")
 
+def _parse_boundary(T, N, f_expr=None, f_values=None):
+    t = np.linspace(0, T, N+1)
+    if f_values is not None:
+        arr = np.asarray(f_values, dtype=float)
+        if arr.shape[0] != t.shape[0]:
+            raise ValueError("f_values должен иметь длину M+1")
+        return lambda tt: arr  # возвращаем массив (игнорируем xx)
+
+    if f_expr is not None:
+        if isinstance(f_expr, (int, float)):
+            return lambda yarr: np.full_like(yarr, float(f_expr))
+        allowed = {
+            "np": np,
+            "sin": np.sin, "cos": np.cos, "tan": np.tan,
+            "exp": np.exp, "sqrt": np.sqrt, "log": np.log,
+            "pi": np.pi, "e": np.e
+        }
+
+        def boundary_callable(tarr):
+            try:
+                val = eval(f_expr, {"__builtins__": {}}, {**allowed, "t": tarr})
+                # если результат — число, преобразуем в массив той же длины, что xarr
+                if np.isscalar(val):
+                    val = np.full_like(tarr, float(val))
+                
+                return val
+            except Exception as e:
+                #raise ValueError(f"Нет переменной x в функции правой части")
+                raise ValueError(f"Неизвестная переменная для граничного условия "+str(e))
+        return boundary_callable
+
+    raise ValueError("Нужно передать либо f_expr, либо f_values")
 
 def _plot_to_base64(fig):
     buf = BytesIO()
@@ -87,52 +144,31 @@ def _plot_to_base64(fig):
 @router.post("/solve")
 def solve(req: SolveRequest):
     try:
-        #f_callable = _parse_function("x", req.L, req.M, req.f_expr, req.f_values)
-        #init_callable = _parse_function("x", req.L, req.M, req.init_cond, req.init_values)
-        #left_bc_callable = _parse_function("t", req.T, req.N, req.left_bc, req.left_values)
-        #right_bc_callable = _parse_function("t", req.T, req.N, req.right_bc, req.right_values)
-        
-        initial_condition = req.init_cond
-        left_boundary_condition = req.left_bc
-        right_boundary_condition = req.right_bc
-        right_side_function = req.f_expr
-        
-        def _safe_replace(expr):
-            return expr.replace('^', '**') if isinstance(expr, str) else expr
-
-        initial_condition = _safe_replace(req.init_cond)
-        left_boundary_condition = _safe_replace(req.left_bc)
-        right_boundary_condition = _safe_replace(req.right_bc)
-        right_side_function = _safe_replace(req.f_expr)
-
-
-        x_sym = sp.Symbol('x')
-        t_sym = sp.Symbol('t')
-        
-        if initial_condition is None:
-            raise HTTPException(status_code=400, detail="Не задано начальное условие init_cond")
-
-        
-        init_cond = sp.sympify(initial_condition)
-        left_cond = sp.sympify(left_boundary_condition)
-        right_cond = sp.sympify(right_boundary_condition)
-        f_ = sp.sympify(right_side_function)
-        
-        init = sp.lambdify((x_sym), init_cond, modules=["numpy"])
-        left = sp.lambdify((t_sym), left_cond, modules=["numpy"])
-        right = sp.lambdify((t_sym), right_cond, modules=["numpy"])
-        f = sp.lambdify((x_sym, t_sym), f_, modules=["numpy"])
-        
+        f_callable = _parse_f(req.T, req.N, req.L, req.M, req.f_expr, req.f_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+    try:
+        init_callable = _parse_init(req.L, req.M, req.init_cond, req.init_values)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    try:
+        left_callable = _parse_boundary(req.T, req.N, req.left_bc, req.left_values)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
+    try:
+        right_callable = _parse_boundary(req.T, req.N, req.right_bc, req.right_values)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
     try:
         #start_time = time.time()
         if req.method == MethodType.explicit:
-            x, u = solve_parabolic_equation_explicit(req.T, req.L, req.N, req.M, req.a, init, left, right, f)
+            x, u = solve_parabolic_equation_explicit(req.T, req.L, req.N, req.M, req.a, init_callable, left_callable, right_callable, f_callable)
         else:
-            x, u = solve_parabolic_equation_implicit(req.T, req.L, req.N, req.M, req.a, init, left, right, f)
+            x, u = solve_parabolic_equation_implicit(req.T, req.L, req.N, req.M, req.a, init_callable, left_callable, right_callable, f_callable)
         #elapsed_time = time.perf_counter() - start_time
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка решения: {e}")

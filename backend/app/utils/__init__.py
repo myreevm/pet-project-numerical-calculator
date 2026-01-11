@@ -2,14 +2,17 @@ from .derivative import left_derivative, central_derivative, right_derivative, s
 from .integral import left_rectangle_method, middle_rectangle_method, right_rectangle_method, trapezoid_method, simpson_method
 from .parabolic_equation_1d import solve_parabolic_equation_explicit, solve_parabolic_equation_implicit
 from .parabolic_equation_2d import solve_parabolic_equation_2d
+from .frac_parabolic_equation_1d import solve_time_frac_parabolic_equation, solve_dim_frac_parabolic_equation
 from .inverse_parabolic_equation import solve_inverse_parabolic
-from .hyperbolic_equation import solve_hyperbolic_equation
+from .hyperbolic1d_equation import solve_hyperbolic_equation
 from .elliptic_equation import solve_elliptic_equation
 from .elliptic_equation_2d import solve_elliptic_equation_2d
 from .inverse_elliptic_equation import simple_iter_method, tikhonov_method
 from .ode_first_order import euler, symmetric_euler
 from .ode_second_order import solve_ode_second
 from .nonlinear import solve_nonlinear_equation
+from .stg import solve_solid_tumor_with_diffusion, solve_solid_tumor_without_diffusion
+from .wastewater_treatment import solve_wastewater
 
 __all__ = [
     'left_derivative',
@@ -23,6 +26,8 @@ __all__ = [
     'solve_parabolic_equation_explicit',
     'solve_parabolic_equation_implicit',
     'solve_parabolic_equation_2d',
+    'solve_time_frac_parabolic_equation',
+    'solve_dim_frac_parabolic_equation',
     'solve_inverse_parabolic',
     'solve_hyperbolic_equation',
     'solve_elliptic_equation',
@@ -32,6 +37,8 @@ __all__ = [
     'euler',
     'symmetric_euler',
     'solve_ode_second',
-    'solve_nonlinear_equation'
-
+    'solve_nonlinear_equation',
+    'solve_solid_tumor_with_diffusion',
+    'solve_solid_tumor_without_diffusion',
+    'solve_wastewater',
 ]

@@ -3,12 +3,12 @@
     <!-- === Header === -->
     <header class="py-4 shadow-md transition-colors duration-300" :class="isDark ? 'bg-indigo-700 text-white' : 'bg-indigo-600 text-white'">
       <div class="container mx-auto flex justify-between items-center px-6">
-        <h1 class="text-2xl font-bold">Калькулятор численных методов</h1>
+        <h1 class="text-2xl font-bold">{{ $t('menu.title') }}</h1>
 
         <nav class="space-x-6 hidden md:flex items-center">
-          <RouterLink to="/" class="hover:text-gray-200 transition">Главная</RouterLink>
-          <RouterLink to="/about" class="hover:text-gray-200 transition">О сайте</RouterLink>
-          <RouterLink to="/contacts" class="hover:text-gray-200 transition">Контакты</RouterLink>
+          <RouterLink to="/" class="hover:text-gray-200 transition">{{ $t('menu.home') }}</RouterLink>
+          <RouterLink to="/about" class="hover:text-gray-200 transition">{{ $t('menu.about') }}</RouterLink>
+          <RouterLink to="/contacts" class="hover:text-gray-200 transition">{{ $t('menu.contacts') }}</RouterLink>
 
           <!-- Theme Toggle Button -->
           <button
@@ -51,11 +51,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch , provide} from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
-const language = ref('ru')
+const { locale } = useI18n()
+const language = ref(locale.value)
 const isDark = ref(false)
+
+provide('isDark', isDark)
 
 // Load theme preference from localStorage
 onMounted(() => {
@@ -63,13 +67,17 @@ onMounted(() => {
   isDark.value = savedTheme === 'dark'
 })
 
+watch(language, (lang) => {
+  locale.value = lang
+  localStorage.setItem('lang', lang)
+})
+
 // Toggle theme function
 const toggleTheme = () => {
   isDark.value = !isDark.value
 }
 
-// Save theme preference to localStorage
-watch(isDark, (newValue) => {
-  localStorage.setItem('theme', newValue ? 'dark' : 'light')
+watch(isDark, (val) => {
+  localStorage.setItem('theme', val ? 'dark' : 'light')
 })
 </script>

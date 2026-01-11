@@ -47,4 +47,9 @@ def solve_parabolic_equation_implicit(T, L, N, M, a, init_cond, left_bc, right_b
         u[i+1][M] = right_bc(t[i])
         for j in range(M-1, -1, -1):
             u[i+1][j] = xi[j+1] * u[i+1][j+1] + eta[j+1]
+    
+    u[0, :] = init_cond(x)
+    u[:, 0] = left_bc(t)
+    u[:, -1] = right_bc(t)
+    
     return x, u
