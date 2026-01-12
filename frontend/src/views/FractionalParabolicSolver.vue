@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение параболического уравнения с дробным производным
+            {{ $t('fractionalParabolic1D.solutionOf1DParabolicEquationWithFractionalDerivative') }}
           </h1>
         </div>
         <button
@@ -47,19 +47,26 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка задачи
+            {{ $t('fractionalParabolic1D.statementOfTheProblem') }}
           </h2>
           <p>
-            Рассматривается одномерное параболическое уравнение с дробным производным:
+            {{ $t('fractionalParabolic1D.a1dParabolicEquationWithFractionalDerivativeIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(\frac{\partial^\alpha u}{\partial t^\alpha} = a \frac{\partial^2u}{\partial x^2} + f(x), \quad 0 < x < L\)
           </p>
           <p>
-            с граничными условиями Дирихле:
+            {{ $t('fractionalParabolic1D.withInitialCondition') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
-            \(u(0) = u_0, \quad u(L) = u_L\)
+            \(u(x, 0) = u_0(x), \quad 0 < x < L \)
+          </p>
+
+          <p>
+            {{ $t('fractionalParabolic1D.withBoundaryConditions') }}
+          </p>
+          <p class="text-center my-4 font-mono text-lg italic">
+            \(u(0, t) = \mu_1(t), \quad u(L, t) = \mu_1(t) \quad 0 < t < T \)
           </p>
           <p>
             Здесь \(a > 0\) - коэффициент теплопроводности (или аналогичный параметр в физической постановке),
@@ -103,7 +110,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина времени (T)
+                {{ $t('fractionalParabolic1D.lengthOfTime') }}
               </label>
               <input
                   v-model.number="params.T"
@@ -119,7 +126,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L)
+                {{ $t('fractionalParabolic1D.lengthOfDomain') }}
               </label>
               <input
                   v-model.number="params.L"
@@ -135,10 +142,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (M)
+                {{ $t('fractionalParabolic1D.numberOfTimePartitions') }}
               </label>
               <input
-                  v-model.number="params.M"
+                  v-model.number="params.N"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -151,10 +158,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (N)
+                {{ $t('fractionalParabolic1D.numberOfDomainPartitions') }}
               </label>
               <input
-                  v-model.number="params.N"
+                  v-model.number="params.M"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -167,7 +174,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (a)
+                {{ $t('fractionalParabolic1D.coefficient') }}
               </label>
               <input
                   v-model.number="params.a"
@@ -182,7 +189,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Порядок дробной производной (alpha)
+                {{ $t('fractionalParabolic1D.orderOfFractionalDerivative') }}
               </label>
               <input
                   v-model.number="params.alpha"
@@ -198,7 +205,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальное условие u(x, 0)
+                {{ $t('fractionalParabolic1D.initialCondition') }}
               </label>
               <input
                   v-model.number="params.init_cond"
@@ -214,7 +221,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0, t)
+                {{ $t('fractionalParabolic1D.leftBoundaryCondition') }}
               </label>
               <input
                   v-model.number="params.left_bc"
@@ -230,7 +237,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L, t)
+                {{ $t('fractionalParabolic1D.rightBoundaryCondition') }}
               </label>
               <input
                   v-model.number="params.right_bc"
@@ -247,7 +254,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x)
+              {{ $t('fractionalParabolic1D.rightHandSideFunction') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -262,11 +269,11 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-              Метод
+              {{ $t('fractionalParabolic1D.method') }}
             </label>
             <select v-model="params.method" :class="inputClasses">
-              <option value="solve-parabolic-equation-explicit">Явная схема</option>
-              <option value="solve-parabolic-equation-implicit">Неявная схема</option>
+              <option value="solve-parabolic-equation-explicit">{{ $t('fractionalParabolic1D.explicitScheme') }}</option>
+              <option value="solve-parabolic-equation-implicit">{{ $t('fractionalParabolic1D.implicitScheme') }}</option>
 
             </select>
 
@@ -288,15 +295,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('fractionalParabolic1D.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('fractionalParabolic1D.solveTheEquation') }}</span>
           </button>
         </form>
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('fractionalParabolic1D.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -311,7 +318,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('fractionalParabolic1D.resultsOfTheSolution') }}
             </h2>
 
           </div>
@@ -343,13 +350,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение параболического уравнения методом конечных разностей</p>
-      </div>
     </div>
   </div>
 </template>
@@ -363,8 +363,8 @@ const darkMode = ref(false);
 const params = ref({
   T: 10.0,
   L: 1.0,
-  M: 50,
-  N: 100,
+  N: 50,
+  M: 100,
   a: 1.0,
   alpha: 0.5,
   init_cond: "sin(2*pi*x)",

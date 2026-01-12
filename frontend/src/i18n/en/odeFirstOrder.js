@@ -1,0 +1,18 @@
+export default{
+    solutionOfODEFirstOrder: 'Solution of a first order differential equation ',
+    statementOfTheProblem: 'Statement of the problem',
+    aFirstOrderDifferentialEquationIsConsidered: 'A first order differential equation is considered:',
+    withInitialCondition: 'with initial condition:',
+    lengthOfDomain: 'Length of domain (L)',
+    numberOfDomainPartitions: 'Number of domain partitions (M)',
+    coefficient: 'Coefficient (a)',
+    initialCondition: 'Initial condition u(0)',
+    rightHandSideFunction: 'Right-hand side function f(x)',
+    method: 'Method',
+    eulerMethod: 'Euler method',
+    symmetricEulerMethod: 'Symmetric euler method',
+    calculating: 'Calculating...',
+    solveTheEquation: 'Solve the equation',
+    error: 'Error',
+    resultsOfTheSolution: 'Results of the solution',
+}

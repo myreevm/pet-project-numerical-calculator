@@ -55,15 +55,15 @@ def solve(req: SolveRequest):
 
     try:
         if req.method == MethodType.left:
-            result = left_rectangle_method(f_callable, req.a, req.b, req.n)
+            result, end_time = left_rectangle_method(f_callable, req.a, req.b, req.n)
         elif req.method == MethodType.middle:
-            result = middle_rectangle_method(f_callable, req.a, req.b, req.n)
+            result, end_time = middle_rectangle_method(f_callable, req.a, req.b, req.n)
         elif req.method == MethodType.right:
-            result = right_rectangle_method(f_callable, req.a, req.b, req.n)
+            result, end_time = right_rectangle_method(f_callable, req.a, req.b, req.n)
         elif req.method == MethodType.trapezoid:
-            result = trapezoid_method(f_callable, req.a, req.b, req.n)
+            result, end_time = trapezoid_method(f_callable, req.a, req.b, req.n)
         elif req.method == MethodType.simpson:
-            result = simpson_method(f_callable, req.a, req.b, req.n)
+            result, end_time = simpson_method(f_callable, req.a, req.b, req.n)
         else:
             raise HTTPException(status_code=400, detail="Неизвестный метод вычисления интеграла.")
     except Exception as e:
@@ -71,5 +71,6 @@ def solve(req: SolveRequest):
 
 
     return {
-        "result": result
+        "result": result,
+        "end_time": end_time,
     }

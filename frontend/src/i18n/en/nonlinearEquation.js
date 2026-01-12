@@ -1,0 +1,16 @@
+export default{
+    solutionOfNonlinearEquation: 'Solution of a nonlinear equation ',
+    //statementOfTheProblem: 'Statement of the problem',
+    //aNonlinearEquationIsConsidered: 'A nonlinear equation is considered:',
+    //withInitialCondition: 'with initial condition:',
+    accuracy: 'Accuracy (eps)',
+    initialApproximation: 'Initial approximation (x0)',
+    function: 'Function f(x)',
+    //method: 'Method',
+    //eulerMethod: 'Euler method',
+    //symmetricEulerMethod: 'Symmetric euler method',
+    calculating: 'Calculating...',
+    solveTheEquation: 'Solve the equation',
+    error: 'Error',
+    resultsOfTheSolution: 'Results of the solution',
+}

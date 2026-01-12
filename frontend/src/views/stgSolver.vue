@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Численное моделирование роста солидной опухоли
+            {{ $t('stg.numericalModelingOfSolidTumorGrowth') }}
           </h1>
         </div>
         <button
@@ -47,10 +47,10 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка задачи
+            {{ $t('stg.statementOfTheProblem') }}
           </h2>
           <p>
-            Рассматривается система дифференциальных уравнений:
+            {{ $t('stg.aSystemOfDifferentialEquationsIsConsidered') }}
           </p>
 
           <p class="text-center my-4 font-mono text-lg italic" v-if="params.method === 'withdiffusion'">
@@ -73,12 +73,12 @@
           </p>
 
           <p>
-            Здесь \(t > 0\) — время, сут.
+            \(t > 0\) — {{ $t('stg.time') }}
           </p>
           <p>
-            \(u_1\) - линейная плотность делящихся клеток
-            \(u_2\) - нормальных
-            \(u_3\) - погибших
+            \(u_1\) - {{ $t('stg.linearDensityOfDividingCells') }}
+            \(u_2\) - {{ $t('stg.linearDensityOfNormalCells') }}
+            \(u_3\) - {{ $t('stg.linearDensityOfDeadCells') }}
           </p>
         </div>
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
@@ -105,11 +105,11 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Модель
+                {{ $t('stg.model') }}
               </label>
               <select v-model="params.method" :class="inputClasses">
-                <option value="withdiffusion">с диффузией</option>
-                <option value="withoutdiffusion">без диффузии</option>
+                <option value="withdiffusion">{{ $t('stg.withDiffusion') }}</option>
+                <option value="withoutdiffusion">{{ $t('stg.withoutDiffusion') }}</option>
 
               </select>
 
@@ -120,7 +120,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальная плотность опухоли
+                {{ $t('stg.initialTumorDensity') }}
               </label>
               <input
                   v-model.number="params.u10"
@@ -135,7 +135,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальная плотность здоровых клеток
+                {{ $t('stg.initialDensityOfHealthyCells') }}
               </label>
               <input
                   v-model.number="params.u20"
@@ -151,7 +151,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальная доля мёртвых клеток
+                {{ $t('stg.initialFractionOfDeadCells') }}
               </label>
               <input
                   v-model.number="params.u30"
@@ -167,7 +167,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальный момент времени
+                {{ $t('stg.initialMomentOfTime') }}
               </label>
               <input
                   v-model.number="params.t0"
@@ -183,7 +183,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Конечный момент времени
+                {{ $t('stg.finalMomentOfTime') }}
               </label>
               <input
                   v-model.number="params.t_end"
@@ -199,7 +199,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Шаг по времени
+                {{ $t('stg.timeStep') }}
               </label>
               <input
                   v-model.number="params.h"
@@ -215,7 +215,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Скорость размножения опухолевых клеток
+              {{ $t('stg.theRateOfTumorCellProliferation') }}
             </label>
             <input
                 v-model.number="params.mu1"
@@ -230,7 +230,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Скорость восстановления / роста здоровых клеток
+              {{ $t('stg.theRateOfHealthyCellRegenerationGrowth') }}
             </label>
             <input
                 v-model.number="params.mu2"
@@ -245,7 +245,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Интенсивность гибели опухолевых клеток из-за мёртвой ткани
+              {{ $t('stg.theRateOfTumorCellDeathDueToDeadTissue') }}
             </label>
             <input
                 v-model.number="params.gamma1"
@@ -260,7 +260,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Гибель здоровых клеток из-за опухолевых
+              {{ $t('stg.deathOfHealthyCellsDueToTumor') }}
             </label>
             <input
                 v-model.number="params.gamma2"
@@ -275,7 +275,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Гибель здоровых клеток из-за некроза
+              {{ $t('stg.deathOfHealthyCellsDueToNecrosis') }}
             </label>
             <input
                 v-model.number="params.gamma3"
@@ -301,15 +301,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('stg.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('stg.solveTheEquation') }}</span>
           </button>
         </form>
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('stg.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -324,7 +324,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('stg.resultsOfTheSolution') }}
             </h2>
 
 
@@ -357,13 +357,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное моделирование роста солидной опухоли</p>
-      </div>
     </div>
   </div>
 </template>

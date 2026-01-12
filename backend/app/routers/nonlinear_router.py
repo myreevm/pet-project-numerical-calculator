@@ -24,13 +24,6 @@ class SolveRequest(BaseModel):
     f_values: Optional[list] = None
 
 def _parse_f(f_expr=None, f_values=None):
-    #x = np.linspace(0, L, M+1)
-    #if f_values is not None:
-    #    arr = np.asarray(f_values, dtype=float)
-    #    if arr.shape[0] != x.shape[0]:
-    #        raise ValueError("f_values должен иметь длину M+1")
-    #    return lambda xx: arr  # возвращаем массив (игнорируем xx)
-
     if f_expr is not None:
         allowed = {
             "np": np,
@@ -38,28 +31,32 @@ def _parse_f(f_expr=None, f_values=None):
             "exp": np.exp, "sqrt": np.sqrt, "log": np.log,
             "pi": np.pi, "e": np.e
         }
-
-        def f_callable(xarr):
+        def f_callable(x):
             try:
-                val = eval(f_expr, {"__builtins__": {}}, {**allowed, "x": xarr})
-                # если результат — число, преобразуем в массив той же длины, что xarr
-                if np.isscalar(val):
-                    val = np.full_like(xarr, float(val))
+                # Поддержка как скаляров, так и массивов
+                val = eval(f_expr, {"__builtins__": {}}, {**allowed, "x": x})
                 return val
             except Exception as e:
-                #raise ValueError(f"Нет переменной x в функции правой части")
-                raise ValueError(f"Неизвестная переменная")
+                raise ValueError(f"Ошибка в выражении: {e}")
         return f_callable
-
+    
+    if f_values is not None:
+        # Если передан массив значений, интерполируем
+        arr = np.asarray(f_values, dtype=float)
+        return lambda x: np.interp(x, np.linspace(0, 1, len(arr)), arr)
+    
     raise ValueError("Нужно передать либо f_expr, либо f_values")
 
 def _to_python_type(val):
     if isinstance(val, np.ndarray):
+        # Если массив из одного элемента, вернуть скаляр
+        if val.size == 1:
+            return float(val.item())
         return val.tolist()
-    elif np.isscalar(val):
+    elif isinstance(val, (np.integer, np.floating)):
         return float(val)
     else:
-        return val  # уже нормальный Python объект
+        return val
 
 def _plot_to_base64(fig):
     buf = BytesIO()
@@ -76,21 +73,19 @@ def solve(req: SolveRequest):
         f_callable = _parse_f(req.f_expr, req.f_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    #print("solving")
+    
     try:
-        result = solve_nonlinear_equation(req.eps, req.init_cond, f_callable)
+        result, iter, end_time = solve_nonlinear_equation(req.eps, req.init_cond, f_callable)
+        #print(f"Raw result: {result}, type: {type(result)}")
+        
+        converted = _to_python_type(result)
+        #print(f"Converted: {converted}, type: {type(converted)}")
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"{e}")
-
-    # --- 1D plot ---
-    #fig1 = plt.figure(figsize=(6,4))
-    #plt.plot(x, u, marker='o')
-    #plt.xlabel('x')
-    #plt.ylabel('u(x)')
-    #plt.grid()
-    #plt.title('Решение u(x)')
-    #img_line = _plot_to_base64(fig1)
-
+        raise HTTPException(status_code=500, detail=f"Ошибка решения: {e}")
+    
     return {
-        "result": _to_python_type(result)
+        "result": converted,
+        "iter": iter,
+        "end_time": end_time,
     }

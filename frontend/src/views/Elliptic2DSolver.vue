@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение 2D эллиптического уравнения
+            {{ $t('elliptic2D.solutionOf2DEllipticEquation') }}
           </h1>
         </div>
         <button
@@ -47,16 +47,16 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка задачи
+            {{ $t('elliptic2D.solutionOf2DEllipticEquation') }}
           </h2>
           <p>
-            Рассматривается двумерное стационарное уравнение Пуассона:
+            {{ $t('elliptic2D.a2dEllipticEquationIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(-a(\frac{\partial^2u}{\partial x^2} + \frac{\partial^2u}{\partial y^2}) = f(x, y), \quad 0 < x < L_x, \quad 0 < y < L_y\)
           </p>
           <p>
-            с граничными условиями Дирихле:
+            {{ $t('elliptic2D.withBoundaryConditions') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(0, y) = \mu_1(y), \quad u(L_x, y) = \mu_2(y)\)
@@ -104,7 +104,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (Lx)
+                {{ $t('elliptic2D.lengthOfDomain_x') }}
               </label>
               <input
                   v-model.number="params.Lx"
@@ -119,7 +119,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (Ly)
+                {{ $t('elliptic2D.lengthOfDomain_y') }}
               </label>
               <input
                   v-model.number="params.Ly"
@@ -135,10 +135,10 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (N)
+                {{ $t('elliptic2D.numberOfDomainPartitions') }}
               </label>
               <input
-                  v-model.number="params.N"
+                  v-model.number="params.M"
                   type="number"
                   step="1"
                   :class="inputClasses"
@@ -151,7 +151,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (k)
+                {{ $t('elliptic2D.coefficient') }}
               </label>
               <input
                   v-model.number="params.k"
@@ -167,7 +167,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0, y)
+                {{ $t('elliptic2D.leftBoundaryCondition') }}
               </label>
               <input
                   v-model="params.left_bc"
@@ -183,7 +183,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(Lx, y)
+                {{ $t('elliptic2D.rightBoundaryCondition') }}
               </label>
               <input
                   v-model="params.right_bc"
@@ -198,7 +198,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(x, 0)
+                {{ $t('elliptic2D.bottomBoundaryCondition') }}
               </label>
               <input
                   v-model="params.bottom_bc"
@@ -213,7 +213,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(x, Ly)
+                {{ $t('elliptic2D.topBoundaryCondition') }}
               </label>
               <input
                   v-model="params.top_bc"
@@ -230,7 +230,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x, y)
+              {{ $t('elliptic2D.rightHandSideFunction') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -239,8 +239,6 @@
                 :class="[inputClasses, 'font-mono text-sm']"
             />
           </div>
-
-
 
           <!-- Submit Button -->
           <button
@@ -258,9 +256,9 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('elliptic2D.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('elliptic2D.solveTheEquation') }}</span>
           </button>
         </form>
 
@@ -268,7 +266,7 @@
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('elliptic2D.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -283,7 +281,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('elliptic2D.resultsOfTheSolution') }}
             </h2>
 
           </div>
@@ -312,13 +310,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение эллиптического уравнения методом конечных разностей</p>
-      </div>
     </div>
   </div>
 </template>
@@ -332,7 +323,7 @@ const darkMode = ref(false);
 const params = ref({
   Lx: 1.0,
   Ly: 1.0,
-  N: 50,
+  M: 50,
   k: 1.0,
   left_bc: 0.0,
   right_bc: 0.0,

@@ -1,0 +1,17 @@
+export default{
+    calculatingTheDefiniteIntegral: 'Calculating the definite integral',
+    lowerLimit: 'Lower limit (a)',
+    upperLimit: 'Upper limit (b)',
+    numberOfPartitions: 'Number of partitions (n)',
+    function: 'Function f(x)',
+    method: 'Method',
+    leftRectangleMethod: 'Left rectangle method',
+    middleRectangleMethod: 'Middle rectangle method',
+    rightRectangleMethod: 'Right rectangle method',
+    trapezoidMethod: 'Trapezoid method',
+    simpsonMethod: 'Simpson method',
+    calculating: 'Calculating...',
+    calculateTheIntegral: 'Calculate the integral',
+    error: 'Error',
+    resultsOfTheSolution: 'Results of the solution',
+}

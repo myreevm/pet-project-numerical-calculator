@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Вычисление определенного интеграла
+            {{ $t('definiteIntegral.calculatingTheDefiniteIntegral') }}
           </h1>
         </div>
         <button
@@ -52,7 +52,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Нижний предел (x)
+                {{ $t('definiteIntegral.lowerLimit') }}
               </label>
               <input
                   v-model.number="params.a"
@@ -67,7 +67,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Верхний предел (x)
+                {{ $t('definiteIntegral.upperLimit') }}
               </label>
               <input
                   v-model.number="params.b"
@@ -82,7 +82,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (n)
+                {{ $t('definiteIntegral.numberOfPartitions') }}
               </label>
               <input
                   v-model.number="params.n"
@@ -102,7 +102,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция f(x)
+              {{ $t('definiteIntegral.function') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -117,14 +117,14 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Метод
+                {{ $t('definiteIntegral.method') }}
               </label>
               <select v-model="params.method" :class="inputClasses">
-                <option value="left-rectangle-method">Метод левых прямоугольников</option>
-                <option value="middle-rectangle-method">Метод средних прямоугольников</option>
-                <option value="right-rectangle-method">Метод правых прямоугольников</option>
-                <option value="trapezoid-method">Метод трапеций</option>
-                <option value="simpson-method">Метод Симпсона</option>
+                <option value="left-rectangle-method">{{ $t('definiteIntegral.leftRectangleMethod') }}</option>
+                <option value="middle-rectangle-method">{{ $t('definiteIntegral.middleRectangleMethod') }}</option>
+                <option value="right-rectangle-method">{{ $t('definiteIntegral.rightRectangleMethod') }}</option>
+                <option value="trapezoid-method">{{ $t('definiteIntegral.trapezoidMethod') }}</option>
+                <option value="simpson-method">{{ $t('definiteIntegral.simpsonMethod') }}</option>
               </select>
 
             </div>
@@ -144,9 +144,9 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('definiteIntegral.calculating') }}
             </span>
-            <span v-else>Вычислить интеграл</span>
+            <span v-else>{{ $t('definiteIntegral.calculateTheIntegral') }}</span>
           </button>
           </div>
         </form>
@@ -154,7 +154,7 @@
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('definiteIntegral.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -169,7 +169,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('definiteIntegral.resultsOfTheSolution') }}
             </h2>
 
             <div :class="[
@@ -178,20 +178,24 @@
             ]">
               <p class="mb-2 text-xl">
                 <strong :class="darkMode ? 'text-blue-400' : 'text-blue-600'"></strong>
-                \( \int_{ {{a}} }^{ {{b}} } f(x) \, dx = {{ result }}\)
+                \( \int_{ {{a}} }^{ {{b}} } f(x) \, dx = {{ formatResult(result.result) }}\)
               </p>
             </div>
+
+            <div :class="[
+              'text-sm p-4 rounded-xl overflow-x-auto font-mono',
+              darkMode ? 'bg-gray-800 text-gray-300' : 'bg-white text-gray-700'
+            ]">
+              <p class="mb-2">
+                <strong :class="darkMode ? 'text-blue-400' : 'hover:text-black'">Solution time = </strong>
+                {{ formatResult(result.end_time) }}
+              </p>
+            </div>
+
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение определенного интеграла</p>
-      </div>
     </div>
   </div>
 </template>
@@ -199,6 +203,7 @@
 <script setup>
 import {ref, computed, onMounted, onUpdated} from "vue";
 import axios from "axios";
+import definiteIntegral from "@/i18n/ru/definiteIntegral.js";
 
 const darkMode = ref(false);
 
@@ -242,9 +247,27 @@ const inputClasses = computed(() => [
 ]);
 
 // Format array for display
-function formatArray(arr) {
-  if (!arr || !arr.length) return '';
-  return arr.slice(0, 10).map(v => v.toFixed(4)).join(', ') + ' ...';
+const formatArray = (arr) => {
+  if (!arr) return "[]";
+  return arr.map(v => {
+    const n = Number(v);
+    return isFinite(n) ? n.toFixed(4) : "NaN";
+  });
+}
+
+// Format single result value
+const formatResult = (value) => {
+  if (value === null || value === undefined) return "N/A";
+
+  const n = Number(value);
+  if (!isFinite(n)) return "NaN";
+
+  // Для очень маленьких чисел используем научную нотацию
+  if (Math.abs(n) < 0.0001 && n !== 0) {
+    return n.toExponential(6);
+  }
+
+  return n.toFixed(6);
 }
 
 async function solve() {
@@ -254,7 +277,7 @@ async function solve() {
 
   try {
     const res = await axios.post("http://127.0.0.1:5000/api/integral/solve", params.value);
-    result.value = res.data.result;
+    result.value = res.data;
     a.value = params.value.a;
     b.value = params.value.b;
   } catch (err) {

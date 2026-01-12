@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение обыкновенного ДУ 2-го порядка
+            {{ $t('odeSecondOrder.solutionOfODESecondOrder') }}
           </h1>
         </div>
         <button
@@ -46,16 +46,16 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка задачи
+            {{ $t('odeSecondOrder.statementOfTheProblem') }}
           </h2>
           <p>
-            Рассматривается обыкновенное дифференциальное уравнение 2-го порядка:
+            {{ $t('odeSecondOrder.aSecondOrderDifferentialEquationIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
-            \(\frac{d^2u}{dx^2} = f(x), \quad 0 < x < L \)
+            \(a\frac{d^2u}{dx^2} = f(x), \quad 0 < x < L \)
           </p>
           <p>
-            с начальным условием:
+            {{ $t('odeSecondOrder.withBoundaryConditions') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(0) = u_0, \quad u(L) = u_L \)
@@ -102,7 +102,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L)
+                {{ $t('odeSecondOrder.lengthOfDomain') }}
               </label>
               <input
                   v-model.number="params.L"
@@ -118,7 +118,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (M)
+                {{ $t('odeSecondOrder.numberOfDomainPartitions') }}
               </label>
               <input
                   v-model.number="params.M"
@@ -134,7 +134,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (a)
+                {{ $t('odeSecondOrder.coefficient') }}
               </label>
               <input
                   v-model.number="params.a"
@@ -150,7 +150,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0)
+                {{ $t('odeSecondOrder.leftBoundaryCondition') }}
               </label>
               <input
                   v-model.number="params.left_bc"
@@ -166,7 +166,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L)
+                {{ $t('odeSecondOrder.rightBoundaryCondition') }}
               </label>
               <input
                   v-model.number="params.right_bc"
@@ -183,7 +183,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x)
+              {{ $t('odeSecondOrder.rightHandSideFunction') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -209,15 +209,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('odeSecondOrder.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('odeSecondOrder.solveTheEquation') }}</span>
           </button>
         </form>
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('odeSecondOrder.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -232,7 +232,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('odeSecondOrder.resultsOfTheSolution') }}
             </h2>
 
           </div>
@@ -255,13 +255,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение обыкновенного ДУ</p>
-      </div>
     </div>
   </div>
 </template>

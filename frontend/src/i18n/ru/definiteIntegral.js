@@ -1,0 +1,17 @@
+export default{
+    calculatingTheDefiniteIntegral: 'Вычисление определенного интеграла',
+    lowerLimit: 'Нижний предел (a)',
+    upperLimit: 'Верхний предел (b)',
+    numberOfPartitions: 'Количество разбиений (n)',
+    function: 'Функция f(x)',
+    method: 'Метод',
+    leftRectangleMethod: 'Метод левых прямоугольников',
+    middleRectangleMethod: 'Метод средних прямоугольников',
+    rightRectangleMethod: 'Метод правых прямоугольников',
+    trapezoidMethod: 'Метод трапеций',
+    simpsonMethod: 'Метод Симпсона',
+    calculating: 'Вычисление...',
+    calculateTheIntegral: 'Вычислить интеграл',
+    error: 'Ошибка',
+    resultsOfTheSolution: 'Результаты решения',
+}

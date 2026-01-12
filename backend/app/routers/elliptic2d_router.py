@@ -22,7 +22,7 @@ router = APIRouter(prefix="/api/elliptic2d", tags=["elliptic2d"])
 class SolveRequest(BaseModel):
     Lx: float
     Ly: float
-    N: int
+    M: int
     k: float
     left_bc: Optional[Union[str, float]] = None
     left_values: Optional[List[float]] = None
@@ -38,14 +38,14 @@ class SolveRequest(BaseModel):
     f_expr: Optional[str] = None
     f_values: Optional[list] = None
 
-def _parse_f(Lx, Ly, N, f_expr=None, f_values=None):
-    x = np.linspace(0, Lx, N+1)
-    y = np.linspace(0, Ly, N+1)
+def _parse_f(Lx, Ly, M, f_expr=None, f_values=None):
+    x = np.linspace(0, Lx, M+1)
+    y = np.linspace(0, Ly, M+1)
 
     # ---- Если задан массив значений ----
     if f_values is not None:
         arr = np.asarray(f_values, dtype=float)
-        if arr.shape != (N+1, N+1):
+        if arr.shape != (M+1, M+1):
             raise ValueError(
                 "f_values должен иметь форму (N+1, N+1)"
             )
@@ -86,11 +86,11 @@ def _parse_f(Lx, Ly, N, f_expr=None, f_values=None):
 
     raise ValueError("Нужно передать либо f_expr, либо f_values")
 
-def _parse_boundary_lr(Ly, N, f_expr=None, f_values=None):
-    y = np.linspace(0, Ly, N+1)
+def _parse_boundary_lr(Ly, M, f_expr=None, f_values=None):
+    y = np.linspace(0, Ly, M+1)
     if f_values is not None:
         arr = np.asarray(f_values, dtype=float)
-        if arr.shape != (N+1):
+        if arr.shape != (M+1):
             raise ValueError("f_values должен иметь длину (N+1)")
         return lambda yy: arr  # возвращаем массив (игнорируем xx)
 
@@ -120,11 +120,11 @@ def _parse_boundary_lr(Ly, N, f_expr=None, f_values=None):
 
     raise ValueError("Нужно передать либо f_expr, либо f_values")
 
-def _parse_boundary_bt(Lx, N, f_expr=None, f_values=None):
-    x = np.linspace(0, Lx, N+1)
+def _parse_boundary_bt(Lx, M, f_expr=None, f_values=None):
+    x = np.linspace(0, Lx, M+1)
     if f_values is not None:
         arr = np.asarray(f_values, dtype=float)
-        if arr.shape != (N+1):
+        if arr.shape != (M+1):
             raise ValueError("f_values должен иметь длину (N+1)")
         return lambda xx: arr  # возвращаем массив (игнорируем xx)
 
@@ -165,34 +165,34 @@ def _plot_to_base64(fig):
 @router.post("/solve")
 def solve(req: SolveRequest):
     try:
-        f_callable = _parse_f(req.Lx, req.Ly, req.N, req.f_expr, req.f_values)
+        f_callable = _parse_f(req.Lx, req.Ly, req.M, req.f_expr, req.f_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     
     try:
-        left_callable = _parse_boundary_lr(req.Ly, req.N, req.left_bc, req.left_values)
+        left_callable = _parse_boundary_lr(req.Ly, req.M, req.left_bc, req.left_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
     try:
-        right_callable = _parse_boundary_lr(req.Ly, req.N, req.right_bc, req.right_values)
+        right_callable = _parse_boundary_lr(req.Ly, req.M, req.right_bc, req.right_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     try:
-        bottom_callable = _parse_boundary_bt(req.Lx, req.N, req.bottom_bc, req.bottom_values)
+        bottom_callable = _parse_boundary_bt(req.Lx, req.M, req.bottom_bc, req.bottom_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
     try:
-        top_callable = _parse_boundary_bt(req.Lx, req.N, req.top_bc, req.top_values)
+        top_callable = _parse_boundary_bt(req.Lx, req.M, req.top_bc, req.top_values)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
     
     try:
-        x, y, u = solve_elliptic_equation_2d(req.Lx, req.Ly, req.N, req.k, left_callable, right_callable, bottom_callable, top_callable, f_callable)
+        x, y, u = solve_elliptic_equation_2d(req.Lx, req.Ly, req.M, req.k, left_callable, right_callable, bottom_callable, top_callable, f_callable)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"{e}")
 

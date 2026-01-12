@@ -1,0 +1,16 @@
+export default{
+    solutionOfNonlinearEquation: 'Решение нелинейного уравнения',
+    //statementOfTheProblem: 'Постановка задачи',
+    //aFirstOrderDifferentialEquationIsConsidered: 'Рассматривается дифференциальное уравнение первого порядка:',
+    //withInitialCondition: 'с начальным условием:',
+    accuracy: 'Точность (eps)',
+    initialApproximation: 'Начальное приближение (x0)',
+    function: 'Функция f(x)',
+    //method: 'Метод',
+    //eulerMethod: 'Метод Эйлера',
+    //symmetricEulerMethod: 'Симметричный метод Эйлера',
+    calculating: 'Вычисление...',
+    solveTheEquation: 'Решить уравнение',
+    error: 'Ошибка',
+    resultsOfTheSolution: 'Результаты решения',
+}

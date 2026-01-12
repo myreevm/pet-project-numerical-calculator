@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение обратной задачи для параболического уравнения
+            {{ $t('inverseParabolic1D.solutionOfInverseProblemFor1DParabolicEquation') }}
           </h1>
         </div>
         <button
@@ -47,22 +47,22 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка прямой задачи
+            {{ $t('inverseParabolic1D.statementOfTheDirectProblem') }}
           </h2>
           <p>
-            Рассматривается одномерное параболическое уравнение:
+            {{ $t('inverseParabolic1D.a1dParabolicEquationIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(\frac{\partial u}{\partial t} = a \frac{\partial^2u}{\partial x^2} + f(x), \quad 0 < x < L\)
           </p>
           <p>
-            с начальным условием:
+            {{ $t('inverseParabolic1D.withInitialCondition') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(x, 0) = u_0(x), \quad 0 < x < L \)
           </p>
           <p>
-            с граничными условиями Дирихле:
+            {{ $t('inverseParabolic1D.withBoundaryConditions') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(0, t) = \mu_1(t), \quad u(L, t) = \mu_2(t), \quad 0 < t < T \)
@@ -76,22 +76,22 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка обратной задачи
+            {{ $t('inverseParabolic1D.statementOfTheInverseProblem') }}
           </h2>
           <p>
-            Рассматривается одномерное параболическое уравнение:
+            {{ $t('inverseParabolic1D.a1dParabolicEquationIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(\frac{\partial u}{\partial t} = a \frac{\partial^2u}{\partial x^2} + f(x), \quad 0 < x < L\)
           </p>
           <p>
-            с начальным условием:
+            {{ $t('inverseParabolic1D.withInitialCondition') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(x, 0) = u_0(x), \quad 0 < x < L \)
           </p>
           <p>
-            с граничными условиями Дирихле:
+            {{ $t('inverseParabolic1D.withBoundaryConditions') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(0, t) = \mu_1(t), \quad u(L, t) = \mu_2(t), \quad 0 < t < T \)
@@ -138,7 +138,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина времени (T)
+                {{ $t('inverseParabolic1D.lengthOfTime') }}
               </label>
               <input
                   v-model.number="params.T"
@@ -154,7 +154,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L)
+                {{ $t('inverseParabolic1D.lengthOfDomain') }}
               </label>
               <input
                   v-model.number="params.L"
@@ -170,7 +170,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (M)
+                {{ $t('inverseParabolic1D.numberOfTimePartitions') }}
               </label>
               <input
                   v-model.number="params.M"
@@ -186,7 +186,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений (N)
+                {{ $t('inverseParabolic1D.numberOfDomainPartitions') }}
               </label>
               <input
                   v-model.number="params.N"
@@ -202,7 +202,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (a)
+                {{ $t('inverseParabolic1D.coefficient') }}
               </label>
               <input
                   v-model.number="params.a"
@@ -217,7 +217,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Уровень зашумления
+                {{ $t('inverseParabolic1D.noiseLevel') }}
               </label>
               <input
                   v-model.number="params.noise"
@@ -232,7 +232,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальное условие u(x, 0)
+                {{ $t('inverseParabolic1D.initialCondition') }}
               </label>
               <input
                   v-model="params.init_cond"
@@ -248,7 +248,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0, t)
+                {{ $t('inverseParabolic1D.leftBoundaryCondition') }}
               </label>
               <input
                   v-model="params.left_bc"
@@ -264,7 +264,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L, t)
+                {{ $t('inverseParabolic1D.rightBoundaryCondition') }}
               </label>
               <input
                   v-model="params.right_bc"
@@ -281,7 +281,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x)
+              {{ $t('inverseParabolic1D.rightHandSideFunction') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -296,7 +296,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-              Максимальное количество итераций
+              {{ $t('inverseParabolic1D.maxIterations') }}
             </label>
             <input
                 v-model.number="params.max_iter"
@@ -322,15 +322,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('inverseParabolic1D.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('inverseParabolic1D.solveTheEquation') }}</span>
           </button>
         </form>
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('inverseParabolic1D.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -345,7 +345,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('inverseParabolic1D.resultsOfTheSolution') }}
             </h2>
 
           </div>
@@ -367,13 +367,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение параболического уравнения методом конечных разностей</p>
-      </div>
     </div>
   </div>
 </template>

@@ -1,0 +1,18 @@
+export default{
+    solutionOfODEFirstOrder: 'Решение дифференциального уравнения первого порядка',
+    statementOfTheProblem: 'Постановка задачи',
+    aFirstOrderDifferentialEquationIsConsidered: 'Рассматривается дифференциальное уравнение первого порядка:',
+    withInitialCondition: 'с начальным условием:',
+    lengthOfDomain: 'Длина области (L)',
+    numberOfDomainPartitions: 'Количество разбиений по области (M)',
+    coefficient: 'Коэффициент (a)',
+    initialCondition: 'Начальное условие u(0)',
+    rightHandSideFunction: 'Функция правой части f(x)',
+    method: 'Метод',
+    eulerMethod: 'Метод Эйлера',
+    symmetricEulerMethod: 'Симметричный метод Эйлера',
+    calculating: 'Вычисление...',
+    solveTheEquation: 'Решить уравнение',
+    error: 'Ошибка',
+    resultsOfTheSolution: 'Результаты решения',
+}

@@ -16,7 +16,7 @@
             'text-2xl md:text-3xl font-bold',
             darkMode ? 'text-white' : 'text-gray-800'
           ]">
-            Решение 1D параболического уравнения
+            {{ $t('parabolic1d.solutionOf1DParabolicEquation') }}
           </h1>
         </div>
         <button
@@ -47,22 +47,22 @@
         <div class="mb-6 p-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-sm"
              :class="darkMode ? 'bg-gray-800/50 text-gray-200' : 'bg-white text-gray-800'">
           <h2 class="text-xl font-semibold mb-3 text-blue-600 dark:text-blue-400">
-            Постановка задачи
+            {{ $t('parabolic1d.statementOfTheProblem') }}
           </h2>
           <p>
-            Рассматривается одномерное параболическое уравнение:
+            {{ $t('parabolic1d.a1dParabolicEquationIsConsidered') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(\frac{\partial u}{\partial t} = a \frac{\partial^2u}{\partial x^2} + f(x), \quad 0 < x < L, \quad 0 < t < T \)
           </p>
           <p>
-            с начальным условием:
+            {{ $t('parabolic1d.withInitialCondition') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(x, 0) = u_0(x), \quad 0 < x < L \)
           </p>
           <p>
-            с граничными условиями Дирихле:
+            {{ $t('parabolic1d.withBoundaryConditions') }}
           </p>
           <p class="text-center my-4 font-mono text-lg italic">
             \(u(0, t) = \mu_1(t), \quad u(L, t) = \mu_2(t), \quad 0 < t < T \)
@@ -108,7 +108,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина времени (T)
+                {{ $t('parabolic1d.lengthOfTime') }}
               </label>
               <input
                   v-model.number="params.T"
@@ -124,7 +124,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Длина области (L)
+                {{ $t('parabolic1d.lengthOfDomain') }}
               </label>
               <input
                   v-model.number="params.L"
@@ -140,7 +140,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений по времени (N)
+                {{ $t('parabolic1d.numberOfTimePartitions') }}
               </label>
               <input
                   v-model.number="params.N"
@@ -156,7 +156,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Количество разбиений по x (M)
+                {{ $t('parabolic1d.numberOfDomainPartitions') }}
               </label>
               <input
                   v-model.number="params.M"
@@ -172,7 +172,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Коэффициент (a)
+                {{ $t('parabolic1d.coefficient') }}
               </label>
               <input
                   v-model.number="params.a"
@@ -188,7 +188,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Начальное условие u(x, 0)
+                {{ $t('parabolic1d.initialCondition') }}
               </label>
               <input
                   v-model="params.init_cond"
@@ -204,7 +204,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(0, t)
+                {{ $t('parabolic1d.leftBoundaryCondition') }}
               </label>
               <input
                   v-model="params.left_bc"
@@ -220,7 +220,7 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-                Граничное условие u(L, t)
+                {{ $t('parabolic1d.rightBoundaryCondition') }}
               </label>
               <input
                   v-model="params.right_bc"
@@ -237,7 +237,7 @@
               'block text-sm font-semibold',
               darkMode ? 'text-gray-300' : 'text-gray-700'
             ]">
-              Функция правой части f(x)
+              {{ $t('parabolic1d.rightHandSideFunction') }}
             </label>
             <input
                 v-model="params.f_expr"
@@ -252,11 +252,11 @@
                 'block text-sm font-semibold',
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               ]">
-              Метод
+              {{ $t('parabolic1d.method') }}
             </label>
             <select v-model="params.method" :class="inputClasses">
-              <option value="solve-parabolic-equation-explicit">Явная схема</option>
-              <option value="solve-parabolic-equation-implicit">Неявная схема</option>
+              <option value="solve-parabolic-equation-explicit">{{ $t('parabolic1d.explicitScheme') }}</option>
+              <option value="solve-parabolic-equation-implicit">{{ $t('parabolic1d.implicitScheme') }}</option>
 
             </select>
 
@@ -278,15 +278,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Вычисление...
+              {{ $t('parabolic1d.calculating') }}
             </span>
-            <span v-else>Решить уравнение</span>
+            <span v-else>{{ $t('parabolic1d.solveTheEquation') }}</span>
           </button>
         </form>
 
         <!-- Error Message -->
         <div v-if="error" class="mt-6 p-4 rounded-2xl bg-red-100 border border-red-300 text-red-700 animate-fade-in">
-          <p class="font-semibold">Ошибка:</p>
+          <p class="font-semibold">{{ $t('parabolic1d.error') }}</p>
           <p class="text-sm">{{ error }}</p>
         </div>
 
@@ -301,7 +301,7 @@
               darkMode ? 'text-green-400' : 'text-green-700'
             ]">
               <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Результаты решения
+              {{ $t('parabolic1d.resultsOfTheSolution') }}
             </h2>
 
 
@@ -334,13 +334,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
-      <div :class="[
-        'text-center mt-8 text-sm',
-        darkMode ? 'text-gray-400' : 'text-gray-600'
-      ]">
-        <p>Численное решение параболического уравнения методом конечных разностей</p>
-      </div>
     </div>
   </div>
 </template>
@@ -354,8 +347,8 @@ const darkMode = ref(false);
 const params = ref({
   T: 10.0,
   L: 1.0,
-  M: 50,
-  N: 100,
+  N: 50,
+  M: 100,
   a: 1.0,
   init_cond: "cos(x)",
   left_bc: "1/e**t",
